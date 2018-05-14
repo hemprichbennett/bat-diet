@@ -127,7 +127,7 @@ outdf$Network <- ordered(outdf$Network, levels = unique(outdf$Network)[order(uni
 
 
 
-batfacet <- ggplot(outdf[-which(outdf$Network=='SAFE,\n2015'),], aes(N_bats, value)) + geom_bin2d(bins =70)+
+batfacet <- ggplot(outdf, aes(N_bats, value)) + geom_bin2d(bins =70)+
   scale_fill_gradient(low = "blue",
                       high = "red", name = 'Count') +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -142,7 +142,7 @@ pdf('plots/Hice/rarifying_bats_facetted.pdf', width = 10)
 batfacet
 dev.off()  
 
-motufacet <- ggplot(outdf[-which(outdf$Network=='SAFE,\n2015'),], aes(N_MOTU, value)) + geom_bin2d(bins =70)+
+motufacet <- ggplot(outdf, aes(N_MOTU, value)) + geom_bin2d(bins =70)+
   scale_fill_gradient(low = "blue",
                       high = "red", name = 'Count') +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
