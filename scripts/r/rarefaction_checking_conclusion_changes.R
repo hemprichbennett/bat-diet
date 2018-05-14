@@ -104,22 +104,4 @@ pdf('plots/Hice/rarified_mets.pdf')
 pairwise_barchart
 dev.off()
 
-signif_df <- data.frame(n_bats, it, n_nets, n_signif)
 
-signif_df$prop_signif <- signif_df$n_signif/(factorial(signif_df$n_nets)/(factorial(2)* factorial(signif_df$n_nets-2)))
-
-
-#####A small calculation just showing how many potential combinations there can be####
-n_nodes <- 118
-n_selected <- 60
-
-factorial(n_nodes)/(factorial(n_selected)*(factorial(n_nodes-n_selected)))
-
-#####Plot #####
-
-ggplot(signif_df, aes(n_bats, prop_signif))+ geom_point(aes(colour = n_nets)) +
-  ylab('Significant proportion of pairwise comparisons')+
-  xlab('Number of bats per network')+
-  theme_bw()+
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
