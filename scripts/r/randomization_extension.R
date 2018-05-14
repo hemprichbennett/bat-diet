@@ -31,30 +31,6 @@ melted_mat$variable <- gsub('partner diversity','Partner diversity', melted_mat$
 melted_mat$variable <- gsub('proportional similarity','Proportional similarity', melted_mat$variable)
 
 
-# IDs <- c()
-# n_bats <- c()
-# nets <- c()
-# mets <- c()
-# means <- c()
-# ses <- c()
-# 
-# for(i in 1:length(unique(melted_mat$`bat ID`))){
-#   ID <- unique(melted_mat$`bat ID`)[i]
-#   temp <- melted_mat[melted_mat$`bat ID`==ID,]
-#   for(n in seq(range(temp$N_bats)[1], range(temp$N_bats)[2])){
-#     subs <- temp[which(temp$N_bats==n),]
-#     for(m in 1:length(unique(subs$variable))){
-#       met <- unique(subs$variable)[m]
-#       met_set <- subs[subs$variable==met,]
-#       IDs <- c(IDs, as.character(ID))
-#       n_bats <- c(n_bats, n)
-#       nets <- c(nets, subs$Network[1])
-#       mets <- c(mets, met)
-#       means <- c(means, mean(subs$value))
-#       ses <- c(ses, std.error(subs$value))
-#     }
-#   }
-# }
 
 all_summary <- ddply(melted_mat, c("`bat ID`", "N_bats", "variable", 'Network'), summarise,
       mean = mean(value), sd = sd(value),
@@ -64,29 +40,42 @@ all_summary <- ddply(melted_mat, c("`bat ID`", "N_bats", "variable", 'Network'),
 all_summary$Network <- ordered(all_summary$Network, levels=unique(all_summary$Network)[order(as.character(unique(all_summary$Network)))])
 
 
+grid_arrange_shared_legend <- function(...) {
+  plots <- list(...)
+  g <- ggplotGrob(plots[[1]] + theme(legend.position="right"))$grobs
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+  lheight <- sum(legend$height)
+  grid.arrange(
+    do.call(arrangeGrob, lapply(plots, function(x)
+      x + theme(legend.position="none"))),
+    legend,
+    ncol = 3,
+    heights = unit.c(unit(1, "npc") - lheight, lheight))
+}
+
 meanplot <- ggplot(all_summary[all_summary$variable=='Proportional similarity',], aes(mean, sd))+ 
   geom_point(aes(colour= N_bats), alpha = 1/2) +
   facet_wrap(~ Network, ncol = 2)+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-  ylab('Standard deviation')+ xlab('Mean')
+  ylab('Standard deviation')+ xlab('Mean')+
+  labs(color='Number of bats')
 
 meanplot
 
 
 countplot <- ggplot(all_summary[all_summary$variable=='Proportional similarity',], aes(count, sd))+ 
-  geom_point(aes(colour= N_bats), alpha = 1/2) +
+  geom_point(aes(colour= N_bats), alpha = 1/2) + #Don't plot the legend on this one
   facet_wrap(~ Network, ncol = 2)+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-  ylab('Standard deviation')+ xlab('Number of observations per individual')
+  ylab('Standard deviation')+ xlab('Number of observations per individual')+
+  labs(color='Number of bats')
 countplot
 
-grid.arrange(meanplot, countplot)
 
-# all_melted$habitat_type <- rep(NA, nrow(all_melted))
-# all_melted[grep('SAFE', all_melted$SiteAndYear), 'habitat_type'] <- 'Logged'
-# all_melted[grep('SBE', all_melted$SiteAndYear), 'habitat_type'] <- 'Logged, replanted'
-# all_melted[grep('Danum', all_melted$SiteAndYear), 'habitat_type'] <- 'Primary'
-# all_melted[grep('Maliau', all_melted$SiteAndYear), 'habitat_type'] <- 'Primary'
-# 
+grid_arrange_shared_legend(meanplot, countplot)
+
+pdf('plots/Hice/individual_effects_of_rarefaction')
+grid_arrange_shared_legend(meanplot, countplot)
+dev.off()
