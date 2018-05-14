@@ -5,6 +5,7 @@ if(interactive()==TRUE){
   library(tidyverse)
   library(ggridges)
   library(gridExtra)
+  library(grid)
   library(forcats)
   library(reshape2)
   library(lme4)
@@ -76,6 +77,6 @@ countplot
 
 grid_arrange_shared_legend(meanplot, countplot)
 
-pdf('plots/Hice/individual_effects_of_rarefaction')
+pdf('plots/Hice/individual_effects_of_rarefaction', onefile = F)
 grid_arrange_shared_legend(meanplot, countplot)
 dev.off()
