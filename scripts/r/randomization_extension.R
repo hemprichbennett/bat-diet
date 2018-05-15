@@ -3,13 +3,12 @@ if(interactive()==TRUE){
   library(here)
   library(ggplot2)
   library(tidyverse)
-  library(ggridges)
   library(gridExtra)
   library(grid)
-  library(forcats)
   library(reshape2)
   library(lme4)
   library(plyr)
+  library(ggpubr)
   library(plotrix)
   #library(multcompView)
 }else{
@@ -60,7 +59,7 @@ meanplot <- ggplot(all_summary[all_summary$variable=='Proportional similarity',]
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   ylab('Standard deviation')+ xlab('Mean')+
-  labs(color='Number of bats')
+  labs(color='Number\nof bats')
 
 meanplot
 
@@ -71,12 +70,14 @@ countplot <- ggplot(all_summary[all_summary$variable=='Proportional similarity',
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   ylab('Standard deviation')+ xlab('Number of observations per individual')+
-  labs(color='Number of bats')
+  labs(color='Number\nof bats')
 countplot
 
 
-grid_arrange_shared_legend(meanplot, countplot)
+#Using the ggpubr package
+ggarrange(meanplot, countplot, ncol=2,  common.legend = TRUE, legend="right")
+
 
 pdf('plots/Hice/individual_effects_of_rarefaction', onefile = F)
-grid_arrange_shared_legend(meanplot, countplot)
+ggarrange(meanplot, countplot, ncol=2,  common.legend = TRUE, legend="right")
 dev.off()
