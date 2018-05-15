@@ -281,17 +281,14 @@ for(i in 1:length(mets)){
  print(summary(mod))
  sink()
 }
+
+#1-off ANOVAs on degree
+fit1 <- lm(value ~ Sex + Age + Reproductive_condition  + Site.y + Year,  data = melted_hice[which(melted_hice$variable=='Degree'),])
+fit2 <- lm(value ~ Sex + Age + Reproductive_condition  + SiteAndYear,  data = melted_hice[which(melted_hice$variable=='Degree'),])
+anova(fit1, fit2)
+
+
  
- 
-
-#####Here I play with the tidyverse to see if I can make lms in a tidier way ####
-
-hice_nested <- melted_hice %>%
-  group_by(variable) %>%
-  nest()
-
-hice_nested$models <-  map(hice_nested$data, ~(lm(value ~ Sex + Age + Reproductive_condition + SiteAndYear, data = .x)))
-
 
 ####Look at correlations ####
 
@@ -398,4 +395,13 @@ for(i in 1:length(unique(for_sex$variable))){
 ggarrange(sexlist[[1]], sexlist[[2]], sexlist[[3]], sexlist[[4]], ncol=1, nrow =4,  common.legend = TRUE, legend="right")
 pdf('plots/Hice/sex_comparisons.pdf', width=12)
 ggarrange(sexlist[[1]], sexlist[[2]], sexlist[[3]], sexlist[[4]], ncol=1, nrow =4,  common.legend = TRUE, legend="right")
+dev.off()
+
+sex_degreeplot <- ggplot(for_sex[which(for_sex$variable=='Degree'),], aes(value, fill = fct_rev(Sex)))+ geom_density(alpha = 0.3)+ 
+  facet_wrap(~ fct_rev(SiteAndYear), ncol = 4)+scale_fill_manual(values=c("yellow","#01c2cd"), name = 'Sex')+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
+  labs(y='Density', x = 'Degree')
+pdf('plots/Hice/degree_sex.pdf')
+sex_degreeplot
 dev.off()
