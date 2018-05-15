@@ -275,16 +275,16 @@ mets <- c('Degree', "Normalised degree", 'Resource range', 'Proportional similar
  
 for(i in 1:length(mets)){
  met = mets[i]
- mod <- lm(value ~ Sex + Age + Reproductive_condition  + Site.y + Year,  data = melted_hice[which(melted_hice$variable==mets[i]),])
+ mod <- lm(value ~ Sex + Age + Reproductive_condition + Year + habitat_type,  data = melted_hice[which(melted_hice$variable==mets[i]),])
  temp_df <- hice_ecology[which(!is.na(hice_ecology$Sex)),]
  sink(paste('data/output_data/hice_stats/', met, '.txt', sep = ''))
  print(summary(mod))
  sink()
 }
 
-#1-off ANOVAs on degree
-fit1 <- lm(value ~ Sex + Age + Reproductive_condition  + Site.y + Year,  data = melted_hice[which(melted_hice$variable=='Degree'),])
-fit2 <- lm(value ~ Sex + Age + Reproductive_condition  + SiteAndYear,  data = melted_hice[which(melted_hice$variable=='Degree'),])
+#1-off ANOVA on degree
+fit1 <- lm(value ~ Sex + Age + Reproductive_condition  + Site.y + Year + habitat_type, data = melted_hice[which(melted_hice$variable=='Degree'),])
+fit2 <- lm(value ~ Sex + Age + Reproductive_condition  + SiteAndYear + habitat_type,  data = melted_hice[which(melted_hice$variable=='Degree'),])
 anova(fit1, fit2)
 
 
@@ -398,7 +398,7 @@ ggarrange(sexlist[[1]], sexlist[[2]], sexlist[[3]], sexlist[[4]], ncol=1, nrow =
 dev.off()
 
 sex_degreeplot <- ggplot(for_sex[which(for_sex$variable=='Degree'),], aes(value, fill = fct_rev(Sex)))+ geom_density(alpha = 0.3)+ 
-  facet_wrap(~ fct_rev(SiteAndYear), ncol = 4)+scale_fill_manual(values=c("yellow","#01c2cd"), name = 'Sex')+
+  facet_wrap(habitat_type~ fct_rev(SiteAndYear), ncol = 4)+scale_fill_manual(values=c("yellow","#01c2cd"), name = 'Sex')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
   labs(y='Density', x = 'Degree')
