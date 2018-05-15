@@ -8,6 +8,7 @@ if(interactive()==TRUE){
   library(reshape2)
   library(corrplot)
   library(DataExplorer)
+  library(ggpubr)
 }else{
   library(here, lib.loc = '/data/home/btw863/r_packages/')
 }
@@ -168,10 +169,12 @@ colnames(hice_ecology) <- gsub('PDI', 'Resource range', colnames(hice_ecology)) 
 # ridge
 # dev.off()
 
-melted_hice <- melt(hice_ecology[,c('SiteAndYear', 'habitat_type', 'degree', 'normalised.degree', 'proportional.similarity', 'Resource range', 'Sex', 'Reproductive_condition', 'Age')])
-#The orders of the metrics aren't alphabetical, this alphabetises them
+melted_hice <- melt(hice_ecology[,c('SiteAndYear', 'habitat_type', 'degree', 'normalised.degree', 'proportional.similarity', 'Resource range', 'Sex', 'Reproductive_condition', 'Age', 'Year', 'Site.y')],
+                    id.vars = c('SiteAndYear', 'habitat_type', 'Sex', 'Reproductive_condition', 'Age', 'Site.y', 'Year'))
+#The orders of the metrics aren't alphabetical, this alphabetises them and makes their names prettier
 melted_hice$variable <- gsub('normalised.degree', 'Normalised degree', melted_hice$variable)
 melted_hice$variable <- gsub('partner.diversity','Partner diversity', melted_hice$variable)
+melted_hice$variable <- gsub('^degree$','Degree', melted_hice$variable)
 melted_hice$variable <- gsub('proportional.similarity','Proportional similarity', melted_hice$variable)
 melted_hice$variable <- gsub('PDI','Resource range', melted_hice$variable)
 melted_hice$variable <- gsub('closeness','Closeness centrality', melted_hice$variable)
@@ -263,18 +266,21 @@ melted_hice[which(!melted_hice$Sex %in% c('M', 'F')), 'Sex'] <- NA
 melted_hice$Sex <- factor(melted_hice$Sex)
 melted_hice$Reproductive_condition <- gsub("LA", "L", melted_hice$Reproductive_condition)
 melted_hice[which(!melted_hice$Reproductive_condition %in% c('L', 'PL', 'PR')), 'Reproductive_condition'] <- 'NR'
-melted_hice$Reproductive_condition <- factor(melted_hice$Reproductive_condition) #Am using this to try to remove missing factors but it isn't fucking working
-mets <- c("normalised.degree", 'Resource range', 'proportional.similarity')
+melted_hice$Site.y <- gsub('DVCA', 'DANUM', melted_hice$Site.y)
+melted_hice$Reproductive_condition <- factor(melted_hice$Reproductive_condition)
+melted_hice$Site.y <- factor(melted_hice$Site.y)
+melted_hice$Year <- factor(melted_hice$Year)
+mets <- c('Degree', "Normalised degree", 'Resource range', 'Proportional similarity')
  
  
- for(i in 1:length(mets)){
-   met = mets[i]
-   mod <- lm(proportional.similarity ~ Sex + Age + Reproductive_condition + SiteAndYear, data = hice_ecology)
-   temp_df <- hice_ecology[which(!is.na(hice_ecology$Sex)),]
-   sink(paste('data/output_data/hice_stats/', met, '.txt', sep = ''))
-   print(summary(mod))
-   sink()
- }
+for(i in 1:length(mets)){
+ met = mets[i]
+ mod <- lm(value ~ Sex + Age + Reproductive_condition  + Site.y + Year,  data = melted_hice[which(melted_hice$variable==mets[i]),])
+ temp_df <- hice_ecology[which(!is.na(hice_ecology$Sex)),]
+ sink(paste('data/output_data/hice_stats/', met, '.txt', sep = ''))
+ print(summary(mod))
+ sink()
+}
  
  
 
@@ -377,12 +383,19 @@ hice_ecology$Reproductive_condition <- gsub('0', NA, hice_ecology$Reproductive_c
 fit <- glm(as.numeric(as.character(Lepidoptera)) ~ Sex  + Age + Reproductive_condition + SiteAndYear, data=hice_ecology)
 summary(fit) # show results
 
+#Make a density plot of the metrics and sexes
+for_sex <- melted_hice[which(melted_hice$Sex!= 'Unknown'),]
+sexlist <- list()
+for(i in 1:length(unique(for_sex$variable))){
+  sexlist[[i]] <- ggplot(for_sex[which(for_sex$variable==unique(for_sex$variable)[i]),], aes(value, fill = fct_rev(Sex)))+ geom_density(alpha = 0.3)+ 
+    facet_wrap(variable ~ fct_rev(SiteAndYear), ncol = 8)+scale_fill_manual(values=c("yellow","#01c2cd"), name = 'Sex')+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
+    labs(y='Density', x = NULL)
+  
+}
 
-###Look at correlations between factors and metrics####
-#I dont think this is valid as it just converts each factor level into another category
-hice_for_all_corr <- hice_ecology[,c(seq(3,22), 59, 60, 63, 74)]
-hice_for_all_corr <- hice_for_all_corr[,-c(9,10,11,12)]
-
-plot_correlation(hice_for_all_corr, use = "pairwise.complete.obs")
-
-
+ggarrange(sexlist[[1]], sexlist[[2]], sexlist[[3]], sexlist[[4]], ncol=1, nrow =4,  common.legend = TRUE, legend="right")
+pdf('plots/Hice/sex_comparisons.pdf', width=12)
+ggarrange(sexlist[[1]], sexlist[[2]], sexlist[[3]], sexlist[[4]], ncol=1, nrow =4,  common.legend = TRUE, legend="right")
+dev.off()
