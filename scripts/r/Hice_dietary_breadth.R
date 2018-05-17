@@ -393,15 +393,24 @@ degree$habitat_type <- as.factor(degree$habitat_type)
 # fit_both_sexes_1 <- lm(log(value) ~ Sex + Age + Year +  Site.y, data = degree)
 # fit_both_sexes_2 <- lm(log(value) ~ Sex + Age + Year +  habitat_type, data = degree) #this one has a slightly better f-statistic but a slightly lower r-squared
 # 
+
+full_lm <- lm(log(value) ~ habitat_type + Site.y + Year, data = degree)
+
 my_lm <- lm(log(value) ~ habitat_type + Site.y * Year, data = degree)
 anova(my_lm) #This model has a high adjusted r-squared (0.05), but loads of colinearity and is difficult to interpret
 summary(my_lm)
 
-simpler_lm <- lm(log(value) ~  habitat_type + Year, data = degree) #This has a lower adjusted r-squared (0.027) but isn't colinear
+type_lm <- lm(log(value) ~  habitat_type + Year, data = degree) #This has a lower adjusted r-squared (0.027) but isn't colinear
+summary(type_lm)
+
+site_lm <- lm(log(value) ~  Site.y + Year, data = degree) #This has a lower adjusted r-squared (0.027) but isn't colinear
+summary(site_lm)
+
+subset_lm <- lm(log(value) ~  Site.y * Year, data = degree[which(degree$habitat_type %in% c('Primary', 'Logged') & degree$Year %in% c('2016', '2017')),])
 
 
-degree_year_site_type <- ggplot(degree, aes(value, fill = Site.y))+ geom_density(alpha = 0.5)+ 
-  facet_grid(Year ~ habitat_type)+scale_fill_manual(values=c("#000000", "#CC79A7", "#0072B2", "#F0E442"), name = 'Site')+
+degree_year_site_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_density()+ 
+  facet_grid(Year ~ Site.y)+scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
   labs(y='Density', x = 'Degree')
@@ -427,8 +436,8 @@ pdf('plots/Hice/degreeplots/degree_type_siteandyear.pdf')
 degree_type_siteandyear
 dev.off()
 
-degree_year_type <- ggplot(degree, aes(value))+ geom_density(alpha = 0.5)+
-  facet_grid(Year ~ habitat_type)+
+degree_year_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_density()+
+  facet_grid(Year ~ habitat_type)+ scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
   labs(y='Density', x = 'Degree')
@@ -439,8 +448,8 @@ pdf('plots/Hice/degreeplots/degree_year_type.pdf')
 degree_year_type
 dev.off()
 
-degree_type <- ggplot(degree, aes(value))+ geom_density(alpha = 0.5)+
-  facet_wrap(~ habitat_type)+
+degree_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_density()+
+  facet_wrap(~ habitat_type)+ scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
   labs(y='Density', x = 'Degree')
@@ -449,3 +458,15 @@ degree_type
 pdf('plots/Hice/degreeplots/degree_type.pdf')
 degree_type
 dev.off()
+
+degree_site <- ggplot(degree, aes(value ))+ geom_density(alpha = 0.5)+
+  facet_grid(Year ~ Site.y)+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
+  labs(y='Density', x = 'Degree')
+degree_site
+
+pdf('plots/Hice/degreeplots/degree_site.pdf')
+degree_site
+dev.off()
+
