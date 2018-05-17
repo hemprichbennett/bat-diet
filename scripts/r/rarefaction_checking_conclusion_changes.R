@@ -38,13 +38,19 @@ for(i in 1: length(unique(outmat$iteration))){
   for(n in 20:68){
     temp <- outmat[which(outmat$N_bats==n & outmat$iteration==i),]
     #cat(dim(temp),'\n')
-    for(m in c(1,2)){
+    for(m in c(1,2,3,4)){
       if(m==1){
         anova_object <- TukeyHSD(aov(temp$`proportional similarity` ~ temp$Network))
         rarelist[[as.character(n)]][[i]][['proportional_similarity']] <- as.matrix(t(anova_object$`temp$Network`))
       }else if(m==2){
         anova_object <- TukeyHSD(aov(temp$`resource range` ~ temp$Network))
         rarelist[[as.character(n)]][[i]][['resource_range']] <- as.matrix(t(anova_object$`temp$Network`))
+      }else if(m==3){
+        anova_object <- TukeyHSD(aov(temp$`degree` ~ temp$Network))
+        rarelist[[as.character(n)]][[i]][['degree']] <- as.matrix(t(anova_object$`temp$Network`))
+      }else if(m==4){
+        anova_object <- TukeyHSD(aov(temp$`normalised degree` ~ temp$Network))
+        rarelist[[as.character(n)]][[i]][['normalised_degree']] <- as.matrix(t(anova_object$`temp$Network`))
       }
     }
     # if(length(which(anova_object$`temp$Network`[,4] <=0.05))>0){
