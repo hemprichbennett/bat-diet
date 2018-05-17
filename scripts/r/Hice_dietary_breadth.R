@@ -1,11 +1,11 @@
 if(interactive()==TRUE){
   library('here')
   library(ggplot2)
+  library(reshape2)
   library(tidyverse)
   library(ggridges)
   library(gridExtra)
   library(forcats)
-  library(reshape2)
   library(corrplot)
   library(DataExplorer)
   library(ggpubr)
@@ -405,9 +405,64 @@ summary(type_lm)
 
 site_lm <- lm(log(value) ~  Site.y + Year, data = degree) #This has a lower adjusted r-squared (0.027) but isn't colinear
 summary(site_lm)
+anova(site_lm, type_lm)
 
-subset_lm <- lm(log(value) ~  Site.y * Year, data = degree[which(degree$habitat_type %in% c('Primary', 'Logged') & degree$Year %in% c('2016', '2017')),])
+subset_site_lm <- lm(log(value) ~  Site.y * Year, data = degree[which(degree$habitat_type %in% c('Primary', 'Logged') & degree$Year %in% c('2016', '2017')),])
+summary(subset_site_lm)
 
+
+subset_lm_df <- data.frame(site = c('Danum', 'Maliau', 'SAFE'), year = c(2016, 2016, 2016, 2017, 2017, 2017),
+                 value= c(2.08728, #Danum 2016
+                          2.08728 + 0.42020, #Maliau 2016
+                          2.08728 - 0.03448, #SAFE 2016
+                          2.08728 + 0.23688, #Danum 2017
+                          2.08728 + 0.42020 + 0.23688 - 0.99657, #Maliau 2017
+                          2.08728 - 0.03448 + 0.23688 - 0.53818#SAFE 2017
+                          ))
+subset_lm_plot <- ggplot(subset_lm_df, aes(year, value, color = site))+ geom_point()+ geom_line()+
+  scale_color_manual(values=c("#0061a4",
+                              "#00aa35",
+                              "#bc00ba"), name = 'Site')+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x = 'Year', y= 'Log degree')+
+  scale_x_discrete(limits=c(2016,2017))
+subset_lm_plot
+
+pdf('plots/Hice/degreeplots/lm_subset.pdf')
+subset_lm_plot
+dev.off()
+
+
+type_lm_df <- data.frame(habitat= c('logged', 'logged', 'logged', 'logged, replanted', 'primary', 'primary'),
+                         year = c(2015, 2016, 2017, 2016, 2016, 2017),
+                         log_vals = c(1.3693, #logged, 2015
+                                      1.3693 + 0.6203, #logged, 2016
+                                      1.3693 + 0.4551, #logged, 2017
+                                      1.3693 + 0.6203 + 0.1410, #logged, replanted 2016
+                                      1.3693 + 0.2946 + 0.6203, #primary, 2016
+                                      1.3693 + 0.2946 + 0.4551 #primary, 2017
+                         ))
+
+type_lm_plot <- ggplot(type_lm_df, aes(year, log_vals, color = habitat))+ geom_point()+ geom_line()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  scale_color_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
+  labs(x = 'Year', y= 'Log degree')+
+  scale_x_discrete(limits=c(2015,2016,2017))
+type_lm_plot
+
+pdf('plots/Hice/degreeplots/lm_type.pdf')
+type_lm_plot
+dev.off()
+
+
+subset_type_lm <- lm(log(value) ~  habitat_type * Year, data = degree[which(degree$habitat_type %in% c('Primary', 'Logged') & degree$Year %in% c('2016', '2017')),])
+summary(subset_type_lm)
+
+temp_lm <- lm(log(value) ~  Site.y + Year, data = degree[which(degree$habitat_type %in% c('Primary', 'Logged') & degree$Year %in% c('2016', '2017')),])
+
+anova(subset_site_lm, temp_lm)
 
 degree_year_site_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_density()+ 
   facet_grid(Year ~ Site.y)+scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
@@ -415,7 +470,7 @@ degree_year_site_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_d
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
   labs(y='Density', x = 'Degree')
 degree_year_site_type
-pdf('plots/Hice/degreeplots/degree_year_site_type.pdf')
+pdf('plots/Hice/degreeplots/degree_year_site_type.pdf', width = 9)
 degree_year_site_type
 dev.off()
 
@@ -459,14 +514,17 @@ pdf('plots/Hice/degreeplots/degree_type.pdf')
 degree_type
 dev.off()
 
-degree_site <- ggplot(degree, aes(value ))+ geom_density(alpha = 0.5)+
+degree_site_year <- ggplot(degree, aes(value ))+ geom_density(alpha = 0.5)+
   facet_grid(Year ~ Site.y)+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
-  labs(y='Density', x = 'Degree')
-degree_site
+  labs(y='Density', x = 'Degree')+
+  geom_text(aes(x, y, label=lab),
+            data=data.frame(x=40, y=Inf, lab=letters[1:9],
+                            yy=unique(degree$Site.y)), vjust=1)
+degree_site_year
 
-pdf('plots/Hice/degreeplots/degree_site.pdf')
-degree_site
+pdf('plots/Hice/degreeplots/degree_site_year.pdf')
+degree_site_year
 dev.off()
 
