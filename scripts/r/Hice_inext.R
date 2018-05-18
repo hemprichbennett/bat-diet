@@ -99,8 +99,13 @@ names(hice_list) <- gsub('DVCA', 'Danum', names(hice_list))
 names(hice_list) <- gsub('MALUA', 'SBE', names(hice_list))
 names(hice_list) <- gsub('MALIAU', 'Maliau', names(hice_list))
 
-
+#For plotting
 a <- iNEXT(hice_list, datatype = 'incidence_freq')
+
+
+#For calculating 'all' for the output csv
+hice_list[['all']] <- c(ncol(all_interactions), rowSums(all_interactions[-c(1,2),]))
+inc_all <- iNEXT(hice_list, datatype = 'incidence_freq')
 
 #####Here I replicate the gginext command, but tweak it a bit because it doesn't natively allow it ####
 
@@ -189,10 +194,10 @@ dev.off()
 
 
 ####Rearrange our stats ####
-asymptote_ests <- a$AsyEst
+asymptote_ests <- inc_all$AsyEst
 asymptote_ests <- asymptote_ests[asymptote_ests$Diversity=='Species richness',]
 asymptote_ests$Site <- as.character(asymptote_ests$Site)
-asymptote_ests <- cbind(asymptote_ests, a$DataInfo$T)
+asymptote_ests <- cbind(asymptote_ests, inc_all$DataInfo$T)
 asymptote_ests <- asymptote_ests[order(asymptote_ests$Site),]
 colnames(asymptote_ests)[8] <- 'number of samples'
 asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_ests$Estimator
