@@ -201,4 +201,6 @@ asymptote_ests <- cbind(asymptote_ests, inc_all$DataInfo$T)
 asymptote_ests <- asymptote_ests[order(asymptote_ests$Site),]
 colnames(asymptote_ests)[8] <- 'number of samples'
 asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_ests$Estimator
+asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_ests$percent_completeness)*100
+asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 write.csv(asymptote_ests, 'data/output_data/hice_stats/hice_diversity_ests.csv')
