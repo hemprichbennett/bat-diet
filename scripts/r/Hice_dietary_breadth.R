@@ -145,8 +145,17 @@ hice_ecology[grep('SAFE', hice_ecology$SiteAndYear), 'habitat_type'] <- 'Logged'
 hice_ecology[grep('MALUA', hice_ecology$SiteAndYear), 'habitat_type'] <- 'Logged, replanted'
 hice_ecology[grep('DANUM', hice_ecology$SiteAndYear), 'habitat_type'] <- 'Primary'
 hice_ecology[grep('MALIAU', hice_ecology$SiteAndYear), 'habitat_type'] <- 'Primary'
-hice_ecology$SiteAndYear <- gsub('MALIAU', 'Maliau', hice_ecology$SiteAndYear)
 hice_ecology$SiteAndYear <- gsub('MALUA', 'SBE', hice_ecology$SiteAndYear)
+#We need the number of nodes per network to be stored, for plotting later
+hice_ecology$n_nodes <- rep(NA, nrow(hice_ecology))
+for(i in 1:length(unique(hice_ecology$SiteAndYear))){
+  var= unique(hice_ecology$SiteAndYear)[i]
+  rows = which(hice_ecology$SiteAndYear==var)
+  val = ncol(sites_list[[which(names(sites_list)==var)]])
+  hice_ecology$n_nodes[rows] <- val
+}
+
+hice_ecology$SiteAndYear <- gsub('MALIAU', 'Maliau', hice_ecology$SiteAndYear)
 hice_ecology$SiteAndYear <- gsub('DANUM', 'Danum', hice_ecology$SiteAndYear)
 hice_ecology$SiteAndYear <- fct_rev(hice_ecology$SiteAndYear) #ggridges plots the factors in an annoying order, this rectifies it
 hice_ecology$SiteYearAndSex <- paste(hice_ecology$SiteAndYear, hice_ecology$Sex)
@@ -169,8 +178,8 @@ colnames(hice_ecology) <- gsub('PDI', 'Resource range', colnames(hice_ecology)) 
 # ridge
 # dev.off()
 
-melted_hice <- melt(hice_ecology[,c('SiteAndYear', 'habitat_type', 'degree', 'normalised.degree', 'proportional.similarity', 'Resource range', 'Sex', 'Reproductive_condition', 'Age', 'Year', 'Site.y')],
-                    id.vars = c('SiteAndYear', 'habitat_type', 'Sex', 'Reproductive_condition', 'Age', 'Site.y', 'Year'))
+melted_hice <- melt(hice_ecology[,c('SiteAndYear', 'habitat_type', 'degree', 'normalised.degree', 'proportional.similarity', 'Resource range', 'Sex', 'Reproductive_condition', 'Age', 'Year', 'Site.y', 'n_nodes')],
+                    id.vars = c('SiteAndYear', 'habitat_type', 'Sex', 'Reproductive_condition', 'Age', 'Site.y', 'Year', 'n_nodes'))
 #The orders of the metrics aren't alphabetical, this alphabetises them and makes their names prettier
 melted_hice$variable <- gsub('normalised.degree', 'Normalised degree', melted_hice$variable)
 melted_hice$variable <- gsub('partner.diversity','Partner diversity', melted_hice$variable)
@@ -290,7 +299,7 @@ melted_degree <- melted_hice[which(melted_hice$variable=='Degree'),]
 #1-off ANOVA on degree
 fit_both_sexes <- lm(log(value) ~ Sex + Age + Year +  Site.y, data = melted_degree)
 fitrep <- lm(log(value) ~Year + Site.y + Reproductive_condition,  data = melted_degree[which(melted_degree$Sex=='F'),])
-anova(fit1, fit2)
+
 
 
  
@@ -464,11 +473,26 @@ temp_lm <- lm(log(value) ~  Site.y + Year, data = degree[which(degree$habitat_ty
 
 anova(subset_site_lm, temp_lm)
 
+
+proportional_similarity_facet <- degree_year_site_type <- ggplot(melted_hice[which(melted_hice$variable=='Proportional similarity'),], aes(value, fill = habitat_type))+ geom_density()+ 
+  facet_grid(Year ~ Site.y)+scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
+  labs(y='Density', x = 'Proportional similarity')+
+  geom_text(data = degree[!duplicated(degree$SiteAndYear),], mapping= aes(x =0.15, y =10, label = n_nodes))
+proportional_similarity_facet
+
+pdf('plots/Hice/proportional_similarity_facet.pdf', width = 9)
+proportional_similarity_facet
+dev.off()
+
 degree_year_site_type <- ggplot(degree, aes(value, fill = habitat_type))+ geom_density()+ 
   facet_grid(Year ~ Site.y)+scale_fill_manual(values=c("#85d7da","#cfb4de","#d0ca9f"), name = 'Habitat type')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
-  labs(y='Density', x = 'Degree')
+  labs(y='Density', x = 'Degree')+
+  geom_text(data = degree[!duplicated(degree$SiteAndYear),], mapping= aes(x =40, y =0.05, label = n_nodes))
+
 degree_year_site_type
 pdf('plots/Hice/degreeplots/degree_year_site_type.pdf', width = 9)
 degree_year_site_type
@@ -518,10 +542,10 @@ degree_site_year <- ggplot(degree, aes(value ))+ geom_density(alpha = 0.5)+
   facet_grid(Year ~ Site.y)+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),strip.background =element_rect(fill="black"),strip.text = element_text(colour = 'white'))+
-  labs(y='Density', x = 'Degree')+
-  geom_text(aes(x, y, label=lab),
-            data=data.frame(x=40, y=Inf, lab=letters[1:9],
-                            yy=unique(degree$Site.y)), vjust=1)
+  labs(y='Density', x = 'Degree')#+
+  # geom_text(aes(x, y, label=lab),
+  #           data=data.frame(x=40, y=Inf, lab=letters[1:9],
+  #                           yy=unique(degree$Site.y)), vjust=1)
 degree_site_year
 
 pdf('plots/Hice/degreeplots/degree_site_year.pdf')
