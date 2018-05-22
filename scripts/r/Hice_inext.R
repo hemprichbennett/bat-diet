@@ -1,4 +1,10 @@
-if(interactive()==TRUE){
+dir <- getwd()
+basedir <- strsplit(dir, split ='/')[[1]][2]
+
+if(basedir =='data2'){
+  library(here, lib.loc = '/data/home/btw863/r_packages/')
+  
+}else{
   library('here')
   library(ggplot2)
   library(tidyverse)
@@ -9,8 +15,6 @@ if(interactive()==TRUE){
   library(corrplot)
   library(iNEXT)
   library(DataExplorer)
-}else{
-  library(here, lib.loc = '/data/home/btw863/r_packages/')
 }
 
 setwd(here())

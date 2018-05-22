@@ -1,14 +1,10 @@
 r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= F){
-  
+  dir <- getwd()
+  basedir <- strsplit(dir, split ='/')[[1]][2]
   if(collapse_species==T && !is.null(desired_species)){
     break('Cannot have false for collapsing species AND have a species desired for selection')
   }
-  if(interactive()==TRUE){
-    library('bipartite')
-    library('stringr')
-    library('igraph')
-    library('reshape')
-  }else{
+  if(basedir=='data2'){
     require(methods)
     library(network, lib.loc = '/data/home/btw863/r_packages/')
     library(statnet.common, lib.loc = '/data/home/btw863/r_packages/')
@@ -19,6 +15,11 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
     library(bipartite, lib.loc = '/data/home/btw863/r_packages/')
     library(stringr, lib.loc = '/data/home/btw863/r_packages/')
     library(reshape, lib.loc = '/data/home/btw863/r_packages/')
+  }else{
+    library('bipartite')
+    library('stringr')
+    library('igraph')
+    library('reshape')
   }
   
   source('scripts/r/The.matrix.reloader.R')
