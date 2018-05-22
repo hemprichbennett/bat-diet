@@ -1,3 +1,5 @@
+## @knitr setup
+
 #setwd()
 
 #Make a nested list, where the main list has a value for each clustering level, and each item within it is a distinct network generated at that level #####
@@ -8,16 +10,12 @@ library(ggplot2)
 library(LOTUS)
 
 r_network_gen <- function(input_network, collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= F){
-
+  dir <- getwd()
+  basedir <- strsplit(dir, split ='/')[[1]][2]
   if(collapse_species==T && !is.null(desired_species)){
     break('Cannot have false for collapsing species AND have a species desired for selection')
   }
-  if(interactive()==TRUE){
-    library('bipartite')
-    library('stringr')
-    library('igraph')
-    library('reshape')
-  }else{
+  if(grepl('data', basedir)){
     require(methods)
     library(network, lib.loc = '/data/home/btw863/r_packages/')
     library(statnet.common, lib.loc = '/data/home/btw863/r_packages/')
@@ -28,8 +26,12 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
     library(bipartite, lib.loc = '/data/home/btw863/r_packages/')
     library(stringr, lib.loc = '/data/home/btw863/r_packages/')
     library(reshape, lib.loc = '/data/home/btw863/r_packages/')
+  }else{
+    library('bipartite')
+    library('stringr')
+    library('igraph')
+    library('reshape')
   }
-
   source('scripts/r/The.matrix.reloader.R')
   source('scripts/r/hernani_comparisons.R')
 
@@ -195,23 +197,5 @@ ind <- c('functional complementarity',
 
 
 m <- metcalcs(networks= netlists, indices = ind, network_level = 'higher')
-scatter <- ggplot(m , aes(x = clustering, y = value, color = network)) +
-  geom_point()+
-  labs(x = 'clustering') +
-  geom_smooth(method = lm, se = T)+
-  scale_x_continuous(breaks = seq(91, 98, 1))+
-  facet_wrap(~ metric, scales = 'free_y')+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-scatter
-pdf('plots/Site comparisons/MOTU_scatter.pdf')
-scatter
-dev.off()
 
-#motuline <- line_plot(input = m, network = 'network', clustering = 'clustering', metric = 'metric', value = 'value', plotname = 'Sabah')
-pdf('plots/Site comparisons/MOTU_line.pdf')
-line_plot(input = m, network = 'network', clustering = 'clustering', metric = 'metric', value = 'value', plotname = 'Sabah')
-dev.off()
-#####ANOVA ####
-m$network <- as.factor(m$network)
-aov(aov(value ~ clustering + network + clustering:network, data = m[m$metric=='web asymmetry',]))
+write.csv(m, 'data/output_data/all_bats/otu_conclusions.csv')
