@@ -1,7 +1,7 @@
 dir <- getwd()
 basedir <- strsplit(dir, split ='/')[[1]][2]
-
-if(basedir =='data2'){
+print(basedir)
+if(grepl('data', basedir)){
   library(here, lib.loc = '/data/home/btw863/r_packages/')
   
 }else{

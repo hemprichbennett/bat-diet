@@ -4,7 +4,7 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
   if(collapse_species==T && !is.null(desired_species)){
     break('Cannot have false for collapsing species AND have a species desired for selection')
   }
-  if(basedir=='data2'){
+  if(grepl('data', basedir)){
     require(methods)
     library(network, lib.loc = '/data/home/btw863/r_packages/')
     library(statnet.common, lib.loc = '/data/home/btw863/r_packages/')
