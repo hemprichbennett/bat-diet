@@ -8,10 +8,16 @@ output: html_document
 
 ---
 ```{r setup, include=FALSE}
-#setwd('~/Dropbox/Education/PhD/Bat-diet/')
 library(knitr)
 knitr::opts_chunk$set(echo = F)
 ```
+```{r otu_conclusion_check, echo=FALSE}
+read_chunk('scripts/r/otu_conclusion_check_output_use.R')
+```
+```{r otu_setup, echo=FALSE}
+<<setup>>
+```
+
 
 #Abstract
  
@@ -40,17 +46,21 @@ knitr::opts_chunk$set(echo = F)
 *Protected areas generally have higher biodiversity than non-protected areas [@Gray2016]
 #Methods
 
-```{r otu_conclusion_check, echo=FALSE}
-#library(knitr)
-#setwd('~/Dropbox/Education/PhD/Bat-diet/')
-read_chunk('scripts/r/otu_conclusion_check_output_use.R')
-```
 
-```{r get_output, echo=FALSE}
-#library(knitr)
-#setwd('~/Dropbox/Education/PhD/Bat-diet/')
-<<setup>>
-``` 
+
+
 #Results
+```{r allscatter, echo=FALSE}
+<<all_scatterplots>>
+``` 
+
+
+```{r lineplot, echo=FALSE}
+<<lineplot>>
+``` 
+
+```{r fc_scat, echo=FALSE}
+<<funct_comp_scatter>>
+```
 
 #Discussion
