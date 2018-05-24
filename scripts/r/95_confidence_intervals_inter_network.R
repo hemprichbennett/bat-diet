@@ -1,3 +1,11 @@
+##################################################
+## Project: bat-diet (for full-species networks)
+## Script purpose: Seeing the significance of various metrics across each of my networks
+## Date: 23/05/18
+## Author: Dave Hemprich-Bennett (hemprich.bennett@gmail.com)
+## Notes
+##################################################
+
 
 library(here)
 library(bipartite)
@@ -11,7 +19,7 @@ library(LOTUS)
 
 setwd(here())
 getwd()
-r_network_gen <- function(input_network, collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= F){
+r_network_gen <- function(input_network, collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= T){
 
   if(collapse_species==T && !is.null(desired_species)){
     break('Cannot have false for collapsing species AND have a species desired for selection')
@@ -183,23 +191,24 @@ names(rawnets) <- gsub('.*\\/', '', dirname(filenames))
 netlists <- lapply(rawnets, r_network_gen, collapse_species = T, filter_species = T)
 names(netlists) <- names(rawnets)
 
+
 #ind <- c('Fisher alpha', 'web asymmetry', 'togetherness', 'functional complementarity')
 
 #ind <- c('connectance', 'web asymmetry', 'functional complementarity')
-ind <- c('functional complementarity',
-                  'web asymmetry',
-                  'Alatalo interaction evenness',
-                  'togetherness',
-                  'Fisher alpha', 'mean number of shared partners',
-                  'niche overlap',
-                  'nestedness',
-                  'discrepancy',
-                  'ISA')
+ ind <- c('functional complementarity',
+                   'web asymmetry',
+                   'Alatalo interaction evenness',
+                   'togetherness',
+                   'Fisher alpha', 'mean number of shared partners',
+                   'niche overlap',
+                   'nestedness',
+                   'discrepancy',
+                   'ISA', 'modularity')
 
 #actual_values <- metcalcs(netlists, indices = ind, network_level = 'higher')
 
 
-#source('~/LOTUS/R/randomized_ranges.R')
+
 real_and_errors <- randomized_ranges(netlists, indices = ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T)
 
 
