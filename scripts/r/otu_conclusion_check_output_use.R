@@ -78,11 +78,40 @@ aov(aov(value ~ clustering + network + clustering:network, data = m[m$metric=='w
 
 
 ## @knitr funct_comp_scatter
-ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = network)) +
+funct_comp <- ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = network)) +
   geom_point()+
-  labs(x = 'Clustering', y= 'Fucntional complementarity') +
-  geom_smooth(method = lm, se = T)+
+  labs(x = 'Clustering', y= 'Functional complementarity') +
   scale_x_continuous(breaks = seq(91, 98, 1))+
   #scale_color_manual(values=c('#E69F00', '#56B4E9'))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+print(funct_comp)
+
+## @knitr mod_scat
+mod_scat <- ggplot(m[m$metric=='modularity',] , aes(x = clustering, y = value, color = habitat_type)) +
+  geom_point()+
+  labs(x = 'Clustering', y= 'Modularity') +
+  scale_x_continuous(breaks = seq(91, 98, 1))+
+  #scale_color_manual(values=c('#E69F00', '#56B4E9'))+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+print(mod_scat)
+
+## @knitr func_scat
+func_scat <- ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = habitat_type)) +
+  geom_point()+
+  labs(x = 'Clustering', y= 'Functional complementarity') +
+  scale_x_continuous(breaks = seq(91, 98, 1))+
+  #scale_color_manual(values=c('#E69F00', '#56B4E9'))+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+print(func_scat)
+
+
+## @knitr GLM writing
+##################################################
+
+mod_mod <- (lm(value ~ site * clustering + year , m[m$metric=='modularity',]))
+plot(mod_mod)
+
+fun_mod <- (lm(value ~ site * clustering + year , m[m$metric=='modularity',]))
