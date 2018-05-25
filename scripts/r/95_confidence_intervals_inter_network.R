@@ -7,13 +7,11 @@
 ##################################################
 
 
-library(here)
-library(bipartite)
-library(ggplot2)
-library(DataExplorer)
-library(LOTUS)
-
-
+if(interactive()==TRUE){
+  library(here)
+}else{
+  library(here, lib.loc = '/data/home/btw863/r_packages/')
+}
 
 
 
@@ -29,6 +27,7 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
     library('stringr')
     library('igraph')
     library('reshape')
+    library(LOTUS)
   }else{
     require(methods)
     library(network, lib.loc = '/data/home/btw863/r_packages/')
@@ -40,6 +39,7 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
     library(bipartite, lib.loc = '/data/home/btw863/r_packages/')
     library(stringr, lib.loc = '/data/home/btw863/r_packages/')
     library(reshape, lib.loc = '/data/home/btw863/r_packages/')
+    library(LOTUS, lib.loc = '/data/home/btw863/r_packages/')
   }
 
   source('scripts/r/The.matrix.reloader.R')
@@ -204,12 +204,13 @@ names(netlists) <- names(rawnets)
                    'nestedness',
                    'discrepancy',
                    'ISA', 'modularity')
+#ind <- 'modularity'
 
 #actual_values <- metcalcs(netlists, indices = ind, network_level = 'higher')
 
 
 
-real_and_errors <- randomized_ranges(netlists, indices = ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T)
+real_and_errors <- randomized_ranges(netlists, indices = ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T, n_perm = 100)
 
 
 save.image('data/output_data/all_bats/real_and_error_calcs.RDS')
