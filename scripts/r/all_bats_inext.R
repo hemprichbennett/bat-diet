@@ -1,3 +1,15 @@
+## @knitr inext_setup
+##################################################
+## Project: bat-diet (all bats)
+## Script purpose: using iNEXT to assess the sampling completeness and total diversity of each of my
+## sampling events
+## Date: 28/05/18
+## Author: Dave Hemprich-Bennett (hemprich.bennett@gmail.com)
+## Notes
+##################################################
+
+
+
 dir <- getwd()
 basedir <- strsplit(dir, split ='/')[[1]][2]
 print(basedir)
@@ -85,7 +97,7 @@ inext_list[['all']] <- c(ncol(all_interactions), rowSums(apply(all_interactions[
 inc_all <- iNEXT(inext_list, datatype = 'incidence_freq')
 
 #####Here I replicate the gginext command, but tweak it a bit because it doesn't natively allow it ####
-
+## @knitr inext_plot
 z <- fortify.iNEXT(a)
 z$site_type <- rep(NA, nrow(z))
 z[grep('SAFE', z$site),'site_type'] <- 'Logged'
@@ -162,12 +174,13 @@ g <- g +
 g <- g + facet_wrap( ~ site, nrow=2, strip.position = 'top')+ #free_x is required so that the x-axes aren't all constrained to showing the same thing
   theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 g <- g + geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
+## @knitr plotting
 g
 
 pdf('plots/all_inext.pdf', width = 10, height = 7)
 g
 dev.off()
-
+## @knitr inext_nos
 
 ####Rearrange our stats ####
 asymptote_ests <- inc_all$AsyEst
@@ -180,4 +193,5 @@ asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_e
 asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_ests$percent_completeness)*100
 asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 
+## @knitr writing
 write.csv(asymptote_ests, 'data/output_data/all_bats_inext.csv')
