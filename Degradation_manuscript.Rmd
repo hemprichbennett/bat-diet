@@ -18,7 +18,12 @@ read_chunk('scripts/r/otu_conclusion_check_output_use.R')
 <<setup>>
 ```
 
-
+```{r inext_chunk, echo=FALSE}
+read_chunk('scripts/r/all_bats_inext.R')
+```
+```{r inext_setup, echo=FALSE}
+<<inext_setup>>
+```
 #Abstract
  
 #Introduction
@@ -56,7 +61,7 @@ read_chunk('scripts/r/otu_conclusion_check_output_use.R')
 
 
 ```{r lineplot, echo=FALSE}
-<<lineplot>>
+###<<lineplot>>
 ``` 
 
 ```{r fc_scat, echo=FALSE}
