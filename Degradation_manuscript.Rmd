@@ -34,7 +34,7 @@ read_chunk('scripts/r/all_bats_inext.R')
 * Define it. Acknowledge that there's bloody loads of definitions 
 * Borneo-specific stuff 
 * Habitat loss and degradation combined threaten 44.8 percent of species (WWF Living planet report
-** (from bats in the anthropocene) A pan-tropical meta-analysis of land-use change studies points to the irreplaceable value of old-growth forests, but also highlights the high species diversity found in regenerating logged forests compared to secondary forests (Gibson et al. 2011)*
+* (from bats in the anthropocene) A pan-tropical meta-analysis of land-use change studies points to the irreplaceable value of old-growth forests, but also highlights the high species diversity found in regenerating logged forests compared to secondary forests (Gibson et al. 2011)*
 
 #Consequences of degradation
 * Need to consider the habitat effects for both secondary consumers, primary consumers and primary producers
