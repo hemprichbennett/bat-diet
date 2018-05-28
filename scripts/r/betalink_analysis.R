@@ -44,13 +44,14 @@ melted_forplot <- melt(for_plot)
 
 #str(beta)
 #for_plot$j <- fct_rev(for_plot$j)
-betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_tile(aes(fill=value), colour = 'white')+
-  scale_fill_gradient(low = "white",
-                      high = "black", limits = c(0,1))+
+betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=value, colour = value))+
+  #geom_tile(aes(fill=value), colour = 'white')+
+  scale_colour_gradient(low = "black",
+                      high = "blue")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   facet_wrap(~ variable)
-  
+betaplot  
 pdf('plots/betaplot.pdf')
 betaplot
 dev.off()
