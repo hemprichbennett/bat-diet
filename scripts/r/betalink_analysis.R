@@ -54,7 +54,7 @@ betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=valu
                         high = "blue", limits = c(0,1))+
   theme_dark()+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position = 'bottom')+
   facet_wrap(~ variable, labeller = label_bquote(italic(beta [.(as.character(variable))])),
              nrow = 3)+
@@ -66,4 +66,4 @@ betaplot
 pdf('plots/betaplot.pdf')
 betaplot
 dev.off()
-plot_str(graphs, type = 'radial')
+
