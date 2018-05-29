@@ -19,6 +19,7 @@ if(grepl('data', basedir)){
   library(reshape2)
   library(betalink)
   library(forcats)
+  library(DataExplorer)
 }
 
 setwd(here())
@@ -26,7 +27,11 @@ source('scripts/r/r_network_gen.r')
 
 
 nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F)
-names(nets) <- gsub('.+ ^', '.+^', names(nets))
+names(nets) <- gsub('DANUM', 'Danum', names(nets))
+names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
+
+write.csv(unlist(lapply(nets, sum)), 'data/output_data/n_links.csv')
+
 graphs <- prepare_networks(nets)
 
 
@@ -36,24 +41,29 @@ temp <- beta
 colnames(temp)[c(1,2)] <- c('j', 'i')
 for_plot <- rbind(beta, temp)
 #Order the factors so that the plot looks nice
-for_plot$i <- ordered(for_plot$i, levels = c("DANUM, 2016", "DANUM, 2017", "MALIAU, 2016", 'MALIAU, 2017',
+for_plot$i <- ordered(for_plot$i, levels = c("Danum, 2016", "Danum, 2017", "Maliau, 2016", 'Maliau, 2017',
                                              'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017'))
-for_plot$j <- ordered(for_plot$j, levels = c("DANUM, 2016", "DANUM, 2017", "MALIAU, 2016", 'MALIAU, 2017',
+for_plot$j <- ordered(for_plot$j, levels = c("Danum, 2016", "Danum, 2017", "Maliau, 2016", 'Maliau, 2017',
                                              'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017'))
+for_plot$STWN <- for_plot$ST/for_plot$WN
 melted_forplot <- melt(for_plot)
 
 
 betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=value, colour = value))+
-  scale_colour_gradient(low = "black",
-                      high = "blue")+
+  scale_colour_gradient(low = "white",
+                        high = "blue", limits = c(0,1))+
+  theme_dark()+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black"),
-        strip.background = element_rect(colour="white", fill="white"),
-        axis.text.x = element_text(angle = 45, hjust = 1))+
-  #facet_wrap(~ variable, labeller = label_bquote(beta [italic(.(variable))]))+
-  facet_wrap(~ variable, labeller = label_bquote(italic(beta [.(as.character(variable))])))+
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = 'bottom')+
+  facet_wrap(~ variable, labeller = label_bquote(italic(beta [.(as.character(variable))])),
+             nrow = 3)+
   labs(x= NULL, y = NULL)
+
+
+
 betaplot  
 pdf('plots/betaplot.pdf')
 betaplot
 dev.off()
+plot_str(graphs, type = 'radial')
