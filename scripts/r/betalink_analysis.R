@@ -42,15 +42,17 @@ for_plot$j <- ordered(for_plot$j, levels = c("DANUM, 2016", "DANUM, 2017", "MALI
                                              'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017'))
 melted_forplot <- melt(for_plot)
 
-#str(beta)
-#for_plot$j <- fct_rev(for_plot$j)
+
 betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=value, colour = value))+
-  #geom_tile(aes(fill=value), colour = 'white')+
   scale_colour_gradient(low = "black",
                       high = "blue")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  facet_wrap(~ variable)
+          panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        strip.background = element_rect(colour="white", fill="white"),
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  #facet_wrap(~ variable, labeller = label_bquote(beta [italic(.(variable))]))+
+  facet_wrap(~ variable, labeller = label_bquote(italic(beta [.(as.character(variable))])))+
+  labs(x= NULL, y = NULL)
 betaplot  
 pdf('plots/betaplot.pdf')
 betaplot
