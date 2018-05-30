@@ -194,4 +194,4 @@ asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_e
 asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 
 ## @knitr writing
-write.csv(asymptote_ests, 'data/output_data/all_bats_inext.csv')
+write.csv(asymptote_ests, 'results/all_bats_inext.csv')
