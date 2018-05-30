@@ -45,38 +45,66 @@ nets <- r_network_gen(collapse_species = T, desired_species = NULL, filter_speci
 names(nets) <- gsub('DANUM', 'Danum', names(nets))
 names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
 
-desired_mets <- c('niche overlap', 'functional complementarity')
-
-vals <- lapply(nets, function(x) networklevel(x, index = desired_mets, level = 'higher'))
-
-df <- data.frame(do.call(rbind, vals))
 
 
-random <- lapply(nets, function(x) replicate(1000, bipartite::networklevel(vegan::permatfull(x, fixedmar= 'both',mtype="count",times=1)$perm[[1]],
-                                        index = 'connectance', level = 'higher')))
-
-
-rbind(sapply(b, function(x) quantile(x, probs=c(0.025, 0.975))),
-sapply(nets, function(x) networklevel(x, index = 'connectance')))
-
-
-
+## Section: Analysing and plotting differences in f-c from null ####
+##################################################
 fun_comp <- signif_check(nets, index = c('functional complementarity'), level = 'higher')
-niche <- signif_check(nets, index = c('niche overlap'), level = 'higher')
-
 melted_fun_comp <- melt.list(fun_comp)
-melted_fun_comp$metric <- rep('functional complementarity', nrow(melted_fun_comp))
-melted_niche <- melt.list(niche)
-melted_niche$metric <- rep('niche overlap', nrow(melted_niche))
-sigs <- rbind(melted_fun_comp, melted_niche)
-str(sigs)
-colnames(sigs) <- c('value', 'network', 'list item', 'metric')
-sigs$network <- as.factor(sigs$network)
-sigs$`list item` <- as.factor(sigs$`list item`)
-sigs$metric <- as.factor(sigs$metric)
+colnames(melted_fun_comp) <- c('value', 'network', 'list item')
+melted_fun_comp$network <- as.factor(melted_fun_comp$network)
+melted_fun_comp$`list item` <- as.factor(melted_fun_comp$`list item`)
 
-ggplot(sigs[which(sigs$`list item`=='random'),], aes(value)) + 
-  geom_histogram(binwidth = 0.5) +facet_grid(network ~ metric, scales = 'free')+
-  geom_vline(data=sigs[which(sigs$`list item`=='real'),], aes(xintercept = value), colour="red")+
-  geom_vline(data=sigs[which(sigs$`list item`=='quantiles'),], aes(xintercept = value), colour="blue")
-  
+
+fun_comp_plot <- ggplot(melted_fun_comp[which(melted_fun_comp$`list item`=='random'),], aes(value)) + 
+  geom_histogram(binwidth = 0.5) +facet_wrap( ~ network, ncol = 1)+
+  geom_vline(data=melted_fun_comp[which(melted_fun_comp$`list item`=='real'),], aes(xintercept = value), colour="red")+
+  geom_vline(data=melted_fun_comp[which(melted_fun_comp$`list item`=='quantiles'),], aes(xintercept = value), colour="blue")+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x='Functional complementarity', y = 'Count')
+fun_comp_plot  
+pdf('plots/fun_comp_sig.pdf')
+fun_comp_plot  
+dev.off()
+
+
+#### Section: Analysing and plotting differences in niche from null####
+##################################################
+
+niche <- signif_check(nets, index = c('niche overlap'), level = 'higher')
+melted_niche <- melt.list(niche)
+colnames(melted_niche) <- c('value', 'network', 'list item')
+melted_niche$network <- as.factor(melted_niche$network)
+melted_niche$`list item` <- as.factor(melted_niche$`list item`)
+
+
+niche_plot <- ggplot(melted_niche[which(melted_niche$`list item`=='random'),], aes(value)) + 
+  geom_histogram(binwidth = 0.005) +facet_wrap( ~ network, ncol = 1)+
+  geom_vline(data=melted_niche[which(melted_niche$`list item`=='real'),], aes(xintercept = value), colour="red")+
+  geom_vline(data=melted_niche[which(melted_niche$`list item`=='quantiles'),], aes(xintercept = value), colour="blue")+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x='Niche overlap', y = 'Count')
+niche_plot
+
+pdf('plots/niche_sig.pdf')
+niche_plot  
+dev.off()
+
+## Section: Mostly pointless bit where I facet by metric, but as the bin widths are so different 
+## they show little. To be tinkered with later
+##################################################
+melted_fun_comp$metric <- rep('functional complementarity', nrow(melted_fun_comp))
+melted_niche$metric <- rep('Niche overlap', nrow(melted_niche))
+sig <- rbind(melted_fun_comp, melted_niche)
+sig$metric <- as.factor(sig$metric)
+
+
+sig_plot <- ggplot(sig[which(sig$`list item`=='random'),], aes(value)) + 
+  geom_histogram(binwidth = 0.005) +facet_grid(metric ~ network, scales = 'free')+
+  geom_vline(data=sig[which(sig$`list item`=='real'),], aes(xintercept = value), colour="red")+
+  geom_vline(data=sig[which(sig$`list item`=='quantiles'),], aes(xintercept = value), colour="blue")+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+sig_plot
