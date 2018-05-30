@@ -30,7 +30,7 @@ nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, includ
 names(nets) <- gsub('DANUM', 'Danum', names(nets))
 names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
 
-write.csv(unlist(lapply(nets, sum)), 'data/output_data/n_links.csv')
+write.csv(unlist(lapply(nets, sum)), 'results/n_links.csv')
 
 graphs <- prepare_networks(nets)
 
