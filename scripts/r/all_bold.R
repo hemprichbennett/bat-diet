@@ -38,8 +38,6 @@ head(mydata)
 
 
 
-#net <- read.table('swarmOTUs/2014_biom_no_singletons.txt', sep = '\t', header = T, row.names = 1)
-
 #make sure headers are not capitalized. We need to use this command to make a named list of the sequences, 
 #otherwise our results from BOLD will not give the name of the OTU they correspond to
 mydata2 <- as.list(setNames(mydata$seqs, mydata$seqID))  
@@ -54,7 +52,8 @@ outtax40 <- lapply(output, head, n=40)
 outtax1 <- lapply(output, head, n = 1)
 outtax1_df <- do.call('rbind', outtax1)
 
-#a <- bold_identify_parents(output, wide = T)
 
 outtaxframe <- do.call("rbind", lapply(outtax40, data.frame))
 write.csv(outtaxframe,'data/all_taxonomic_info.csv')
+
+#a <- bold_identify_parents(output, wide = T)
