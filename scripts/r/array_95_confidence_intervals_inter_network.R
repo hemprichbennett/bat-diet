@@ -10,6 +10,7 @@
 if(interactive()==TRUE){
   library(here)
 }else{
+  library(reshape2, lib.loc = '/data/home/btw863/r_packages/')
   library(here, lib.loc = '/data/home/btw863/r_packages/')
 }
 
@@ -208,7 +209,7 @@ ind <- c('functional complementarity',
                    'discrepancy',
                    'ISA', 'modularity')
 
-chosen_ind <- ind[args]
+chosen_ind <- ind[1]
 
 
 real_and_errors <- randomized_ranges(netlists, indices = chosen_ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T, n_perm = 100)
