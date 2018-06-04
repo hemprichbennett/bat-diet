@@ -21,7 +21,7 @@ for(i in 1: length(unique(ranges_df$metric))){
   pdf(paste('plots/randomized_ranges/', met, '.pdf', sep =''))
   p_list[[met]] <- ggplot(ranges_df[which(ranges_df$metric==met),], aes(clustering, actual, colour = network))+
     geom_point()+
-    geom_errorbar(aes(ymin=lower, ymax=upper, colour = network), width=.1)+
+    geom_errorbar(aes(ymin=lower, ymax=upper, colour = network), width=.1, alpha = 0.5)+
     theme_bw()
   print(p_list[[met]])
   dev.off()
