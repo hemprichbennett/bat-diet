@@ -214,7 +214,7 @@ chosen_ind <- ind[args]
 
 real_and_errors <- randomized_ranges(netlists, indices = chosen_ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T, n_perm = 100)
 
-write.csv(real_and_errors, 'data/output_data/randomized_ranges/', chosen_ind, '.csv', sep = '')
+write.csv(real_and_errors, paste('data/output_data/randomized_ranges/', chosen_ind, '.csv', sep = ''))
 
 #save.image(paste('data/output_data/all_bats/', chosen_ind, '_real_and_error_calcs.RDS', sep = ''))
 #plot_str(trial, type = "r")
