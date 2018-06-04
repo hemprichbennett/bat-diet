@@ -14,4 +14,4 @@ module load R
 
 
 
-Rscript /data/scratch/btw863/bat-diet/scripts/r/array_95_confidence_intervals_inter_network.R
+Rscript /data/scratch/btw863/bat-diet/scripts/r/array_95_confidence_intervals_inter_network.R ${SGE_TASK_ID}
