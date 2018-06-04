@@ -19,3 +19,4 @@ plots/
 *.pdf
 *.png
 .Rhistory[Conflict 1]
+*.DS_Store
