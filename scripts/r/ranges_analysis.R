@@ -69,7 +69,7 @@ for(i in 1: length(unique(ranges_df$metric))){
     theme(legend.position="none")+
     theme(panel.border = element_blank(), panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-   labs(x = 'clustering', y = firstup(as.character(met)))
+   labs(x = 'Clustering', y = firstup(as.character(met)))
   
 
    only_sig <- ggplot(ranges_df[which(ranges_df$metric==met & ranges_df$signif=='significant'),], aes(clustering, actual, colour = network))+
@@ -80,7 +80,7 @@ for(i in 1: length(unique(ranges_df$metric))){
        theme(legend.position="none")+
        theme(panel.border = element_blank(), panel.grid.major = element_blank(),
              panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-   labs(x = 'clustering', y = firstup(as.character(met)))
+   labs(x = 'Clustering', y = firstup(as.character(met)))
  
   leg <- g_legend(ggplot(ranges_df[which(ranges_df$metric==met),], aes(clustering, actual, colour = network))+
                     geom_point()+
