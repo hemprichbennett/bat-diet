@@ -28,6 +28,8 @@ file_list <- lapply(files, read.csv, row.names= 1)
 
 ranges_df <- do.call(rbind, file_list)
 colnames(ranges_df)[c(4,5)] <- c('lower', 'upper')
+ranges_df$network <- gsub('DANUM', 'Danum', ranges_df$network)
+ranges_df$network <- gsub('MALIAU', 'Maliau', ranges_df$network)
 
 #Calculate if a value is significant or not
 ranges_df$signif <- rep('significant', nrow(ranges_df))
