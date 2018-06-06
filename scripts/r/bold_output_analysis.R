@@ -26,3 +26,6 @@ pests <- pests[-which(pests=='')]
 
 #These are potential pest MOTU consumed by bats
 pestconsumption <- alltax[which(alltax$taxonomicidentification %in% pests),]
+
+
+write.csv(pestconsumption, 'results/pestvals.csv')
