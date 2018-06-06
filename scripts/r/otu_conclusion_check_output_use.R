@@ -14,43 +14,51 @@ firstup <- function(x) {
 
 #Set up the dataframe properly
 m <- read.csv('data/output_data/all_bats/otu_conclusions.csv', row.names = 1)
-m$site <- unlist(lapply(m$network, function(x) strsplit(as.character(x), split = ', ')[[1]][1]))
-m$year <- unlist(lapply(m$network, function(x) strsplit(as.character(x), split = ', ')[[1]][2]))
-m$site <- gsub('DANUM', 'Danum', m$site)
-m$site <- gsub('MALIAU', 'Maliau', m$site)
-m$habitat_type <- as.factor(ifelse(m$site == 'SAFE', 'Logged', 'Primary'))
+weighted_m <- read.csv('data/output_data/all_bats/weighted_otu_conclusions.csv', row.names = 1)
+
+m$source <- 'frequency'
+weighted_m$source <- 'weighted'
+metrics <- rbind(m, weighted_m)
+
+metrics$site <- unlist(lapply(metrics$network, function(x) strsplit(as.character(x), split = ', ')[[1]][1]))
+metrics$year <- unlist(lapply(metrics$network, function(x) strsplit(as.character(x), split = ', ')[[1]][2]))
+metrics$site <- gsub('DANUM', 'Danum', metrics$site)
+metrics$site <- gsub('MALIAU', 'Maliau', metrics$site)
+metrics$habitat_type <- as.factor(ifelse(metrics$site == 'SAFE', 'Logged', 'Primary'))
+metrics$metric <- gsub(' ', '\n', metrics$metric)
+metrics$metric <- gsub('\\.', '\n', metrics$metric)
 
 
-sitescatter <- ggplot(m , aes(x = clustering, y = value, color = site)) +
+sitescatter <- ggplot(metrics , aes(x = clustering, y = value, color = site)) +
   geom_point()+
   labs(x = 'clustering') +
   geom_smooth(method = lm, se = T)+
   scale_x_continuous(breaks = seq(91, 98, 1))+
   #scale_color_manual(values=c('#E69F00', '#56B4E9'))+
-  facet_wrap(~ firstup(gsub('\\.', ' ', metric)), scales = 'free_y')+
+  facet_grid(firstup(gsub('\\.', ' ', metric)) ~ source, scales = 'free')+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
-#print(sitescatter)
+print(sitescatter)
 #pdf('plots/Site comparisons/MOTU_sitescatter.pdf')
 #sitescatter
 #dev.off()
 
-netscatter <- ggplot(m , aes(x = clustering, y = value, color = network)) +
+netscatter <- ggplot(metrics , aes(x = clustering, y = value, color = network)) +
   geom_point()+
   labs(x = 'clustering') +
   geom_smooth(method = lm, se = T)+
   scale_x_continuous(breaks = seq(91, 98, 1))+
   #scale_color_manual(values=c('#E69F00', '#56B4E9'))+
-  facet_wrap(~ firstup(gsub('\\.', ' ', metric)), scales = 'free_y')+
+  facet_grid(firstup(gsub('\\.', ' ', metric)) ~ source, scales = 'free')+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
-#print(netscatter)
+print(netscatter)
 #pdf('plots/Site comparisons/MOTU_netscatter.pdf')
 #netscatter
 #dev.off()
 
 
-habscatter <- ggplot(m , aes(x = clustering, y = value, color = habitat_type)) +
+habscatter <- ggplot(metrics , aes(x = clustering, y = value, color = habitat_type)) +
   geom_point()+
   labs(x = 'clustering') +
   geom_smooth(method = lm, se = T)+
@@ -70,15 +78,15 @@ grid.arrange(netscatter, sitescatter, habscatter, ncol = 2)
 #pdf('plots/Site comparisons/MOTU_line.pdf')
 #line_plot(input = m, network = 'network', clustering = 'clustering', metric = 'metric', value = 'value', plotname = 'Sabah')
 #dev.off()
-line_plot(input = m, network = 'network', clustering = 'clustering', metric = 'metric', value = 'value', plotname = 'Sabah')
+line_plot(input = metrics, network = 'network', clustering = 'clustering', metric = 'metric', value = 'value', plotname = 'Sabah')
 #####ANOVA ####
 ## @knitr anova
-m$network <- as.factor(m$network)
-aov(aov(value ~ clustering + network + clustering:network, data = m[m$metric=='web asymmetry',]))
+metrics$network <- as.factor(metrics$network)
+aov(aov(value ~ clustering + network + clustering:network, data = metrics[metrics$metric=='web asymmetry',]))
 
 
 ## @knitr funct_comp_scatter
-funct_comp <- ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = network)) +
+funct_comp <- ggplot(metrics[metrics$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = network)) +
   geom_point()+
   labs(x = 'Clustering', y= 'Functional complementarity') +
   scale_x_continuous(breaks = seq(91, 98, 1))+
@@ -88,7 +96,7 @@ funct_comp <- ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clu
 print(funct_comp)
 
 ## @knitr mod_scat
-mod_scat <- ggplot(m[m$metric=='modularity',] , aes(x = clustering, y = value, color = habitat_type)) +
+mod_scat <- ggplot(metrics[metrics$metric=='modularity',] , aes(x = clustering, y = value, color = habitat_type)) +
   geom_point()+
   labs(x = 'Clustering', y= 'Modularity') +
   scale_x_continuous(breaks = seq(91, 98, 1))+
@@ -98,7 +106,7 @@ mod_scat <- ggplot(m[m$metric=='modularity',] , aes(x = clustering, y = value, c
 print(mod_scat)
 
 ## @knitr func_scat
-func_scat <- ggplot(m[m$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = habitat_type)) +
+func_scat <- ggplot(metrics[metrics$metric=='functional.complementarity.HL',] , aes(x = clustering, y = value, color = habitat_type)) +
   geom_point()+
   labs(x = 'Clustering', y= 'Functional complementarity') +
   scale_x_continuous(breaks = seq(91, 98, 1))+
@@ -111,7 +119,7 @@ print(func_scat)
 ## @knitr GLM writing
 ##################################################
 
-mod_mod <- (lm(value ~ site * clustering + year , m[m$metric=='modularity',]))
+mod_mod <- (lm(value ~ site * clustering + year , metrics[metrics$metric=='modularity',]))
 plot(mod_mod)
 
-fun_mod <- (lm(value ~ site * clustering + year , m[m$metric=='modularity',]))
+fun_mod <- (lm(value ~ site * clustering + year , metrics[metrics$metric=='modularity',]))
