@@ -8,6 +8,7 @@
 
 library(here)
 library(bold)
+library(ggmap)
 
 setwd(here())
 
@@ -29,3 +30,27 @@ pestconsumption <- alltax[which(alltax$taxonomicidentification %in% pests),]
 
 
 write.csv(pestconsumption, 'results/pestvals.csv')
+
+
+midpoint <- c(lon=	117.321995, lat = 4.699939)
+southern_sabah <- get_map(midpoint, source = 'google', maptype = 'roadmap', zoom = 4)
+
+ggmap(southern_sabah) +
+  geom_point(aes(x = specimen_lon, y = specimen_lat), col = 'orange', alpha = 0.2,
+             data = pestconsumption)
+
+
+all_midpoint <- c(lon=	18, lat = 4.699939)
+world <- get_map(all_midpoint, source = 'google', maptype = 'hybrid', zoom = 1)
+
+map <- ggmap(world) +
+  geom_point(aes(x = specimen_lon, y = specimen_lat), col = 'orange', alpha = 0.2,
+             data = alltax)+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "white"), axis.ticks.y=element_blank(), axis.text.y=element_blank())+
+  labs(x = NULL, y= NULL)
+map  
+pdf('plots/worldwide_bold_matches.pdf')
+map
+dev.off()
+
