@@ -31,15 +31,18 @@ pestconsumption <- alltax[which(alltax$taxonomicidentification %in% pests),]
 
 write.csv(pestconsumption, 'results/pestvals.csv')
 
-
+#####Plot where the pests were collected####
 midpoint <- c(lon=	117.321995, lat = 4.699939)
-southern_sabah <- get_map(midpoint, source = 'google', maptype = 'roadmap', zoom = 4)
+se_asia <- get_map(midpoint, source = 'google', maptype = 'roadmap', zoom = 4)
 
-ggmap(southern_sabah) +
+pests <- ggmap(se_asia) +
   geom_point(aes(x = specimen_lon, y = specimen_lat), col = 'orange', alpha = 0.2,
              data = pestconsumption)
 
+pests
 
+
+#####Now plot all matches####
 all_midpoint <- c(lon=	18, lat = 4.699939)
 world <- get_map(all_midpoint, source = 'google', maptype = 'hybrid', zoom = 1)
 
