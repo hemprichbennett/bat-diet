@@ -1,6 +1,6 @@
 ##################################################
 ## Project: bat diet
-## Script purpose: look at the sequences BOLD matched in 'bold_querying'
+## Script purpose: Generate BOLD IDs
 ## Date: 31/05/18
 ## Author: Dave Hemprich-Bennett (hemprich.bennett@gmail.com)
 ## Notes
