@@ -20,6 +20,7 @@ if(grepl('data', basedir)){
   library(betalink)
   library(forcats)
   library(DataExplorer)
+  library(gridExtra)
 }
 
 setwd(here())
@@ -67,3 +68,31 @@ pdf('plots/betaplot.pdf')
 betaplot
 dev.off()
 
+
+S_WN <- ggplot(for_plot, aes(S, WN))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+  scale_x_continuous(limits = c(0,1))+
+  scale_y_continuous(limits = c(0,1))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+S_OS <- ggplot(for_plot, aes(S, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+  scale_x_continuous(limits = c(0,1))+
+  scale_y_continuous(limits = c(0,1))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+S_ST <- ggplot(for_plot, aes(S, ST))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+  scale_x_continuous(limits = c(0,1))+
+  scale_y_continuous(limits = c(0,1))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+WN_OS <- ggplot(for_plot, aes(WN, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+  scale_x_continuous(limits = c(0,1))+
+  scale_y_continuous(limits = c(0,1))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+grid.arrange(S_WN, S_OS, S_ST, WN_OS)
