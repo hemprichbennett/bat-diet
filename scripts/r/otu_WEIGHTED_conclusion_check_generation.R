@@ -206,7 +206,7 @@ ind <- c('functional complementarity',
          'niche overlap',
          'nestedness',
          'discrepancy',
-         'ISA')
+         'ISA', 'robustness')
 
 
 
