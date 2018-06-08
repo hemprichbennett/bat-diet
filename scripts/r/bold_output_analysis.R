@@ -10,6 +10,7 @@ library(here)
 library(bold)
 library(ggmap)
 
+
 setwd(here())
 
 files <- list.files(pattern = 'taxonomic_info*', path = 'data/')
@@ -56,4 +57,31 @@ map
 pdf('plots/worldwide_bold_matches.pdf')
 map
 dev.off()
+
+
+
+
+#Extract the bestmatches
+best <- as.character(pestconsumption[which(pestconsumption$similarity > 0.97),'X'])
+names(best) <- as.character(pestconsumption[which(pestconsumption$similarity > 0.97),'taxonomicidentification'])
+best <- gsub('\\..+', '', best)
+
+
+
+source('scripts/r/r_network_gen.r')
+
+
+nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F)
+names(nets) <- gsub('DANUM', 'Danum', names(nets))
+names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
+
+
+mat <- matrix(nrow = 0, ncol = length(nets)+2) 
+for(i in 1:length(best)){
+  vec <- c(best[i], names(best)[i],sapply(nets, function(x) best[i] %in% rownames(x)))
+  mat <- rbind(mat, vec)
+  rownames(mat)[i] <- best[i]
+}
+
+df <- as.data.frame(mat)
 
