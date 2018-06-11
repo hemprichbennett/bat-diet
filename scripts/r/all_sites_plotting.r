@@ -8,7 +8,7 @@ setwd(here())
 getwd()
 source('scripts/r/r_network_gen.r')
 
-nets <- r_network_gen(collapse_species = T, filter_species = T)
+nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T)
 
 
 
