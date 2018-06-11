@@ -36,6 +36,10 @@ source('scripts/r/r_network_gen.r')
 
 #Make list of networks
 nets <- r_network_gen(collapse_species = T, include_malua = F, lulu = T)
+
+names(nets) <- gsub('DANUM', 'Danum', names(nets))
+names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
+
 n_nodes <- c(115, 119, 84, 80, 83, 150, 105)
 names(n_nodes) <- names(nets)
 #Paste together the columns of each network into a vector, so we have a vector of unique interactions
@@ -113,7 +117,7 @@ z[grep('observation', z$lty),'lty'] <- NA
 
 g <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site_type')) + 
   geom_point(size=3, data=data.sub)+
-  ylab('OTU diversity') + xlab('Number of bats sampled')+
+  ylab('interaction diversity') + xlab('Number of bats sampled')+
   geom_line(aes_string(linetype="lty"), lwd=0.5)+
   scale_color_manual(values=palette)
 
@@ -134,6 +138,23 @@ g <- g + facet_wrap( ~ site, nrow=2, strip.position = 'top')+ #free_x is require
 g <- g + geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
 
 g
+pdf('plots/inext/all_interaction_inext.pdf')
+g
+dev.off()
+
+asymptote_ests <- a$AsyEst
+asymptote_ests <- asymptote_ests[asymptote_ests$Diversity=='Species richness',]
+asymptote_ests$Site <- as.character(asymptote_ests$Site)
+asymptote_ests <- cbind(asymptote_ests, a$DataInfo$T)
+asymptote_ests <- asymptote_ests[order(asymptote_ests$Site),]
+colnames(asymptote_ests)[8] <- 'number of samples'
+asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_ests$Estimator
+asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_ests$percent_completeness)*100
+asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 
 
+write.csv(asymptote_ests, 'results/interactions_inext.csv')
+
+b <- interactionslist$`SAFE, 2015`[2:length(interactionslist$`SAFE, 2015`)]
+b <- ifelse(b, 0,1)
 
