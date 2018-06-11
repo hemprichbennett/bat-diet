@@ -13,7 +13,6 @@
 
 module load R
 
-#INPUT_FILE=$(sed -n "${SGE_TASK_ID}p" /data/home/btw863/network_OTU_comparisons/numbers.csv)
 
 Rscript /data/scratch/btw863/bat-diet/scripts/r/lulu_bold_querying.R ${SGE_TASK_ID}
 
