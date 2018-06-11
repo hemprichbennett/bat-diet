@@ -174,10 +174,10 @@ g <- g +
 g <- g + facet_wrap( ~ site, nrow=2, strip.position = 'top')+ #free_x is required so that the x-axes aren't all constrained to showing the same thing
   theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 g <- g + geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
-## @knitr plotting
+
 g
 
-pdf('plots/all_inext.pdf', width = 10, height = 7)
+pdf('plots/inext/all_inext.pdf', width = 10, height = 7)
 g
 dev.off()
 ## @knitr inext_nos
@@ -195,3 +195,29 @@ asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 
 ## @knitr writing
 write.csv(asymptote_ests, 'results/all_bats_inext.csv')
+
+
+
+
+
+
+
+nofacet <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site')) + 
+  geom_point(size=3, data=data.sub)+
+  ylab('OTU diversity') + xlab('Number of bats sampled')+
+  geom_line(aes_string(linetype="lty"), lwd=0.5)+
+  scale_color_discrete()+
+  theme(legend.position = "bottom", 
+        legend.title=element_blank(),
+        text=element_text(size=18),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #Get rid of a load of the default crap
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text.x = element_text(size=10),
+        axis.text.y = element_text(size=8))+
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))+#strip stuff sorts the facet labels, spacing adjusts the space between facets  
+geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
+nofacet
+
+pdf('plots/inext/all_bats_motu_inext_nofacet.pdf')
+nofacet
+dev.off()
