@@ -64,35 +64,55 @@ betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=valu
 
 
 betaplot  
-pdf('plots/betaplot.pdf')
+pdf('plots/beta/betaplot.pdf')
 betaplot
 dev.off()
 
 
-S_WN <- ggplot(for_plot, aes(S, WN))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+S_WN <- ggplot(for_plot, aes(S, WN))+ geom_point()+ geom_abline(intercept = 0, slope = 1, linetype="dotted")+ 
   scale_x_continuous(limits = c(0,1))+
   scale_y_continuous(limits = c(0,1))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  xlab(expression(italic(beta[S])))+ ylab(expression(italic(beta[WN])))
 
-S_OS <- ggplot(for_plot, aes(S, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+S_OS <- ggplot(for_plot, aes(S, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1, linetype="dotted")+ 
   scale_x_continuous(limits = c(0,1))+
   scale_y_continuous(limits = c(0,1))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  xlab(expression(italic(beta[S])))+ ylab(expression(italic(beta[OS])))
 
-
-S_ST <- ggplot(for_plot, aes(S, ST))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+S_ST <- ggplot(for_plot, aes(S, ST))+ geom_point()+ geom_abline(intercept = 0, slope = 1, linetype="dotted")+ 
   scale_x_continuous(limits = c(0,1))+
   scale_y_continuous(limits = c(0,1))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  xlab(expression(italic(beta[S])))+ ylab(expression(italic(beta[ST])))
 
-WN_OS <- ggplot(for_plot, aes(WN, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1)+ 
+WN_OS <- ggplot(for_plot, aes(WN, OS))+ geom_point()+ geom_abline(intercept = 0, slope = 1, linetype="dotted")+ 
   scale_x_continuous(limits = c(0,1))+
   scale_y_continuous(limits = c(0,1))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  xlab(expression(italic(beta[WN])))+ ylab(expression(italic(beta[OS])))
 
-
+pdf('plots/beta/betascatter.pdf')
 grid.arrange(S_WN, S_OS, S_ST, WN_OS)
+dev.off()
+
+pdf('plots/beta/s_wn.pdf')
+S_WN
+dev.off()
+
+pdf('plots/beta/s_os.pdf')
+S_OS
+dev.off()
+
+pdf('plots/beta/s_st.pdf')
+S_ST
+dev.off()
+
+pdf('plots/beta/wn_os.pdf')
+WN_OS
+dev.off()
