@@ -214,8 +214,9 @@ nofacet <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site')) +
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text.x = element_text(size=10),
         axis.text.y = element_text(size=8))+
-  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))+#strip stuff sorts the facet labels, spacing adjusts the space between facets  
-geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
+geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)+
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets  
+
 nofacet
 
 pdf('plots/inext/all_bats_motu_inext_nofacet.pdf')
