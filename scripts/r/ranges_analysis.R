@@ -97,3 +97,14 @@ for(i in 1: length(unique(ranges_df$metric))){
   grid.arrange(nolegend, only_sig, leg, ncol = 3)
     dev.off()
 }
+
+
+ggplot(ranges_df[which(ranges_df$metric==met & ranges_df$signif=='significant'),], aes(clustering, actual, colour = network))+
+  geom_point()+
+  scale_fill_manual(values=cbPalette)+
+  scale_colour_manual(values=cbPalette)+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x = 'Clustering', y = firstup(as.character(met)))
