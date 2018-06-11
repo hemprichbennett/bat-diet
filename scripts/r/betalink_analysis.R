@@ -116,3 +116,20 @@ dev.off()
 pdf('plots/beta/wn_os.pdf')
 WN_OS
 dev.off()
+
+
+sink('results/betadiversity/s_wn.txt')
+summary(lm(S ~ WN, data = for_plot))
+sink()
+
+sink('results/betadiversity/s_os.txt')
+summary(lm(S ~ OS, data = for_plot))
+sink()
+
+sink('results/betadiversity/s_st.txt')
+summary(lm(S ~ ST, data = for_plot))
+sink()
+
+sink('results/betadiversity/wn_os.txt')
+summary(lm(WN ~ OS, data = for_plot))
+sink()

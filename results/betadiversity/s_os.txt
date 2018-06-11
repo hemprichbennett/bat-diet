@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = S ~ OS, data = for_plot)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.064571 -0.023655 -0.004611  0.021809  0.067829 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.62410    0.03892  16.035  < 2e-16 ***
+OS           0.31839    0.07063   4.508  5.6e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.03238 on 40 degrees of freedom
+Multiple R-squared:  0.3369,	Adjusted R-squared:  0.3203 
+F-statistic: 20.32 on 1 and 40 DF,  p-value: 5.597e-05
+
