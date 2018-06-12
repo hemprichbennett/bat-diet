@@ -130,24 +130,13 @@ all_ecology <- merge(all_ecology, t_taxa, by.x='Sample' , by.y= 'Sample_no')
 
 all_ecology <- merge(x = all_ecology, y = field_data, by.x = 'Sample', by.y = 'Faeces_no1')
 
+colnames(all_ecology)[which(colnames(all_ecology)=='Site.y')] <- 'Site'
+
 #write.csv(all_ecology, 'all_ecology_3.csv')
 #####Work out the nestedness of each bat, then add it to the df#####
 
 
-all_ecology <- cbind(all_ecology, rep(NA, nrow(all_ecology)))
-colnames(all_ecology)[ncol(all_ecology)] <- 'nestedrank'
-for(n in 1:length(sites_list)){
-  nest <- nestedrank(sites_list[[n]])[['higher level']]
-  for(i in 1:length(nest)){
-    if(names(nest)[i] %in% all_ecology[,1]){
-      val <- nest[i]
-      print(val)
-      pos <- which(all_ecology[,1]==names(nest)[i])
-      print(pos)
-      all_ecology[pos, ncol(all_ecology)] <- val
-    }
-  }
-}
+
 write.csv(all_ecology, 'data/output_data/all_bats/sitewise_all_individual_info.csv')
 save.image('data/output_data/sitewise_all_individual_info.RDS')
 #####Local work ####
@@ -156,18 +145,18 @@ load('data/output_data/sitewise_all_individual_info.RDS')
 
 #Look at the occurence of taxa in each species
 
-tax_df <- all_ecology[,c(1, 58, 74, seq(23,39))]
-tax_df <- melt(tax_df, id.vars = c('Sample', 'Species', 'SiteAndYear'))
+tax_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
+tax_df <- melt(tax_df, id.vars = c('Sample', 'Species', 'Site'))
 colnames(tax_df)[c(4,5)] <- c('Order', 'Present/absent')
 tax_df$`Present/absent` <- as.integer(tax_df$`Present/absent`)
 tax_df$`Present/absent` <- ifelse(tax_df$`Present/absent`== 0, 0, 1)
 
-prop_present <- sapply(unique(tax_df[,c('Species', 'SiteAndYear', 'Order')]),  function(x) as.character(x))
+prop_present <- sapply(unique(tax_df[,c('Species', 'Site', 'Order')]),  function(x) as.character(x))
 prop <- c()
 nbats <- c()
 #for(i in 1: 1){
 for(i in 1: nrow(prop_present)){
-  tem <- tax_df[which(tax_df$Species==as.character(prop_present[i,1]) & tax_df$SiteAndYear== as.character(prop_present[i,2])
+  tem <- tax_df[which(tax_df$Species==as.character(prop_present[i,1]) & tax_df$Site== as.character(prop_present[i,2])
                       & tax_df$Order==as.character(prop_present[i,3])),]
   prop <- c(prop, sum(tem$`Present/absent`)/nrow(tem)) #The number of bats that consumed the order, divided by total bats
   nbats <- c(nbats, nrow(tem))
@@ -179,9 +168,8 @@ prop_present <- as.data.frame(prop_present)
 prop_present$prop <- as.numeric(as.character(prop_present$prop))
 prop_present$nbats <- as.integer(as.character(prop_present$nbats))
 
-prop_present$SiteAndYear <- gsub('DANUM', 'Danum', prop_present$SiteAndYear)
-prop_present$SiteAndYear <- gsub('DVCA', 'Danum', prop_present$SiteAndYear)
-prop_present$SiteAndYear <- gsub('MALIAU', 'Maliau', prop_present$SiteAndYear)
+prop_present$Site <- gsub('DANUM', 'Danum', prop_present$Site)
+prop_present$Site <- gsub('MALIAU', 'Maliau', prop_present$Site)
 prop_present$Species <- gsub('Hice', 'Hipposideros cervinus', prop_present$Species)
 prop_present$Species <- gsub('Hiri', 'Hipposideros ridleyi', prop_present$Species)
 prop_present$Species <- gsub('Hidi', 'Hipposideros diadema', prop_present$Species)
@@ -194,21 +182,22 @@ prop_present$Species <- gsub('Rhse', 'Rhinolophus sedulus', prop_present$Species
 prop_present$Species <- gsub('Rhtr', 'Rhinolophus trifoliatus', prop_present$Species)
 
 
-balloons <- ggplot(data = prop_present[which(prop_present$nbats >9),], aes(y = fct_rev(Order), x =SiteAndYear)) + geom_point(aes(size=prop, colour = prop))+ 
+balloons <- ggplot(data = prop_present[which(prop_present$nbats >9),], aes(y = fct_rev(Order), x =Site)) + geom_point(aes(size=prop, colour = prop))+ 
   scale_colour_gradient2(low = 'white',  high = 'steelblue')+
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))+
   labs(fill='Proportion of MOTU present',
-       x ="Site and year", y = 'Prey taxa')+
+       x ="Site", y = 'Prey taxa')+
   facet_wrap(~Species)
 balloons
 
-tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_rev(Order), x =SiteAndYear)) + geom_tile(aes(fill=prop), colour = 'white')+
+tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_rev(Order), x =Site)) + geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient(low = "white",
                       high = "black", name = 'Proportion') + # #3e0e4c works well
   labs(fill='Proportion of MOTU present',
-       x ="Site and year", y = 'Prey taxa')+
+       x ="Site", y = 'Prey taxa')+
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
-  facet_wrap(~Species)
+  facet_wrap(~Species)+
+theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
 
 pdf('plots/Site comparisons/sitewise_proportion_of_bats_containing.pdf')    
