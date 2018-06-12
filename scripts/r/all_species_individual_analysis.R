@@ -19,22 +19,22 @@ field_data$Site <- gsub('DVCA', 'Danum', field_data$Site)
 field_data$Site <- gsub('DANUM', 'Danum', field_data$Site)
 field_data$Site <- gsub('MALIAU', 'Maliau', field_data$Site)
 
-all_interactions <- r_network_gen(collapse_species = F, desired_species = NULL, include_malua = F, filter_species = T, lulu = T)
+all_interactions <- r_network_gen(collapse_species = F, desired_species = NULL, include_malua = T, filter_species = T, lulu = T)
 
-desired_cols <- c('MOTU', 'DANUM, 2016', 'DANUM, 2017', 'MALIAU, 2016', 'MALIAU, 2017', 'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017')
+desired_cols <- c('MOTU', 'DANUM, 2016', 'DANUM, 2017', 'MALIAU, 2016', 'MALIAU, 2017', 'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017', 'SBE, 2016')
 
 all_interactions <- all_interactions[,-which(!all_interactions[1,] %in% desired_cols)]
 
 
 colnames(all_interactions) <- all_interactions[2,]
-all_interactions <- all_interactions[-c(1,2),]
+all_interactions <- all_interactions[-c(2),]
 rownames(all_interactions) <- all_interactions[,1]
 all_interactions <- all_interactions[,-1]
 
 locations <- c()
 
 for(i in 1:ncol(all_interactions)){
-  locations[i] <- all_interactions[2,i]
+  locations[i] <- all_interactions[1,i]
   names(locations)[i] <- all_interactions[1,i]
 }
 
@@ -90,7 +90,7 @@ for(i in 1:length(unique(names(locations)))){
 }
 names(sites_list) <- unique(names(locations))
 
-
+names(sites_list)
 
 #####Do some ecology ####
 all_ecology <- matrix(nrow=0, ncol=1+ncol(specieslevel(matrix(sample(0: 1, size =100, replace = T), nrow = 10, ncol = 10), level = 'higher')))
