@@ -1,8 +1,11 @@
-r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= F){
+r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_species = F, include_malua=F, lulu= F, split_by = 'site'){
   dir <- getwd()
   basedir <- strsplit(dir, split ='/')[[1]][2]
   if(collapse_species==T && !is.null(desired_species)){
     break('Cannot have false for collapsing species AND have a species desired for selection')
+  }
+  if(!split_by %in% c('site', 'site and year')){
+    break('split.by must be \'site\' or \'site and year\'')
   }
   if(grepl('data', basedir)){
     require(methods)
@@ -80,13 +83,23 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
   field_data <- field_data[-which(field_data$SiteAndYear %in% badsites),]
   
   if(collapse_species==T){
-    
-    nets <- lapply(unique(field_data$SiteAndYear), function(i) the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2', species.column = "Species", split.by.column = "SiteAndYear", split.by.var = i, OTU.matrix = all_interactions))
-    
-    names(nets) <- unique(field_data$SiteAndYear)
-    for(i in 1:length(nets)){
-      print(names(nets)[i])
-      print(colnames(nets[[i]]))
+    if(split_by == 'site and year'){
+      nets <- lapply(unique(field_data$SiteAndYear), function(i) the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2', species.column = "Species", split.by.column = "SiteAndYear", split.by.var = i, OTU.matrix = all_interactions))
+      
+      names(nets) <- unique(field_data$SiteAndYear)
+      for(i in 1:length(nets)){
+        print(names(nets)[i])
+        print(colnames(nets[[i]]))
+      }
+    }
+    if(split_by == 'site'){
+      nets <- lapply(unique(field_data$Site), function(i) the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2', species.column = "Species", split.by.column = "Site", split.by.var = i, OTU.matrix = all_interactions))
+      
+      names(nets) <- unique(field_data$Site)
+      for(i in 1:length(nets)){
+        print(names(nets)[i])
+        print(colnames(nets[[i]]))
+      }
     }
     
     
@@ -108,29 +121,51 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
     if(is.null(desired_species)){
       if(filter_species==F){
         for(i in 1:ncol(all_interactions)){
-          if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no1){
-            row <- field_data[which(field_data$Faeces_no1==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
-            all_interactions[1,i] <- as.character(site)
-          }else if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no2){
-            row <- field_data[which(field_data$Faeces_no2==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
-            all_interactions[1,i] <- as.character(site)
-          }  
+            if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no1){
+              row <- field_data[which(field_data$Faeces_no1==as.character(all_interactions[1,i])),]
+              if(split_by=='site and year'){
+              site <- row$SiteAndYear
+              }
+              if(split_by=='site'){
+                site <- row$Site
+              }
+              all_interactions[1,i] <- as.character(site)
+            }else if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no2){
+              row <- field_data[which(field_data$Faeces_no2==as.character(all_interactions[1,i])),]
+              if(split_by=='site and year'){
+                site <- row$SiteAndYear
+              }
+              if(split_by=='site'){
+                site <- row$Site
+              }
+              all_interactions[1,i] <- as.character(site)
+            }
+          
+            
         }
       }else if(filter_species==T){
         badcols <- c()
         for(i in 1:ncol(all_interactions)){
           if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no1){
             row <- field_data[which(field_data$Faeces_no1==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            if(split_by=='site and year'){
+              site <- row$SiteAndYear
+            }
+            if(split_by=='site'){
+              site <- row$Site
+            }
             all_interactions[1,i] <- as.character(site)
             if(!row$Species %in% desired_colnames){
               badcols <- c(badcols,i)
             }
           }else if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no2){
             row <- field_data[which(field_data$Faeces_no2==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            if(split_by=='site and year'){
+              site <- row$SiteAndYear
+            }
+            if(split_by=='site'){
+              site <- row$Site
+            }
             all_interactions[1,i] <- as.character(site)
             if(!row$Species %in% desired_colnames){
               badcols <- c(badcols,i)
@@ -141,15 +176,6 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
       }
       
       
-      # if(filter_species==T){
-      #   
-      #   for(i in 1: length(nets)){
-      #     if(length(which(!colnames(nets[[i]]) %in% desired_colnames))>0){#If there are species that we don't want
-      #       to_remove <- which(!colnames(nets[[i]]) %in% desired_colnames)
-      #       nets[[i]] <- nets[[i]][,-to_remove]
-      #     }
-      #   }
-      # }
       return(all_interactions)
     }else{
       all_interactions_with_extra <- rbind(all_interactions[1,], all_interactions)
