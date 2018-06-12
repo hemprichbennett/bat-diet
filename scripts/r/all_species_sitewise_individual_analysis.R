@@ -148,10 +148,10 @@ for(n in 1:length(sites_list)){
     }
   }
 }
-write.csv(all_ecology, 'data/output_data/all_bats/all_individual_info.csv')
-save.image('data/output_data/all_individual_info.RDS')
+write.csv(all_ecology, 'data/output_data/all_bats/sitewise_all_individual_info.csv')
+save.image('data/output_data/sitewise_all_individual_info.RDS')
 #####Local work ####
-load('data/output_data/all_individual_info.RDS')
+load('data/output_data/sitewise_all_individual_info.RDS')
 
 
 #Look at the occurence of taxa in each species
@@ -211,7 +211,7 @@ tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_
   facet_wrap(~Species)
 tiles
 
-pdf('plots/Site comparisons/proportion_of_bats_containing.pdf')    
+pdf('plots/Site comparisons/sitewise_proportion_of_bats_containing.pdf')    
 tiles
 dev.off()
   
