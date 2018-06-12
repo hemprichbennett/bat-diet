@@ -141,7 +141,7 @@ write.csv(all_ecology, 'data/output_data/all_bats/sitewise_all_individual_info.c
 save.image('data/output_data/sitewise_all_individual_info.RDS')
 #####Local work ####
 load('data/output_data/sitewise_all_individual_info.RDS')
-
+all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
 
 #Look at the occurence of taxa in each species
 
@@ -200,7 +200,7 @@ tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_
 theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
 
-pdf('plots/Site comparisons/sitewise_proportion_of_bats_containing.pdf')    
+pdf('plots/sitewise_proportion_of_bats_containing.pdf')    
 tiles
 dev.off()
   
