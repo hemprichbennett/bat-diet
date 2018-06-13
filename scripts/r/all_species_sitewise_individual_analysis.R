@@ -197,11 +197,57 @@ tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_
        x ="Site", y = 'Prey taxa')+
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
   facet_wrap(~Species)+
-theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
 
 pdf('plots/sitewise_proportion_of_bats_containing.pdf')    
 tiles
 dev.off()
-  
+
+#now make a separate dataframe for analysing with a glmm
+# order_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
+# order_df <- melt(order_df, id.vars = c('Sample', 'Species', 'Site'))
+# colnames(order_df)[c(4,5)] <- c('Order', 'nMOTU')
+# order_df$`nMOTU` <- as.integer(order_df$nMOTU)
+# order_df$genus <- rep(NA, nrow(order_df))
+# order_df$genus[grepl('Hi', order_df$Species)] <- 'Hipposideros'
+# order_df$genus[grepl('Rh', order_df$Species)] <- 'Rhinolophus'
+# order_df$genus[grepl('Ke', order_df$Species)] <- 'Kerivoula'
+# order_df$echolocation <- rep(NA, nrow(order_df))
+# order_df$echolocation[grepl('Ke', order_df$Species)] <- 'LDC'
+# order_df$echolocation[grepl('Rh', order_df$Species)] <- 'HDC'
+# order_df$echolocation[grepl('Hi', order_df$Species)] <- 'HDC'
+# order_df$hab_type <- rep(NA, nrow(order_df))
+# order_df$hab_type[grepl('Danum', order_df$Site)] <- 'Primary'
+# order_df$hab_type[grepl('Maliau', order_df$Site)] <- 'Primary'
+# order_df$hab_type[grepl('SAFE', order_df$Site)] <- 'Logged'
+
+degree_df <- data.frame(all_ecology$degree, all_ecology$Species, all_ecology$Site, all_ecology$Year)
+colnames(degree_df) <- gsub('all_ecology\\.', '', colnames(degree_df))
+degree_df$genus <- rep(NA, nrow(degree_df))
+degree_df$genus[grepl('Hi', degree_df$Species)] <- 'Hipposideros'
+degree_df$genus[grepl('Rh', degree_df$Species)] <- 'Rhinolophus'
+degree_df$genus[grepl('Ke', degree_df$Species)] <- 'Kerivoula'
+degree_df$echolocation <- rep(NA, nrow(degree_df))
+degree_df$echolocation[grepl('Ke', degree_df$Species)] <- 'LDC'
+degree_df$echolocation[grepl('Rh', degree_df$Species)] <- 'HDC'
+degree_df$echolocation[grepl('Hi', degree_df$Species)] <- 'HDC'
+degree_df$hab_type <- rep(NA, nrow(degree_df))
+degree_df$hab_type[grepl('Danum', degree_df$Site)] <- 'Primary'
+degree_df$hab_type[grepl('Maliau', degree_df$Site)] <- 'Primary'
+degree_df$hab_type[grepl('SAFE', degree_df$Site)] <- 'Logged'
+degree_df$hab_type[grepl('SBE', degree_df$Site)] <- 'Logged, replanted'
+degree_df$degree <- as.integer(degree_df$degree)
+library(glmm)
+ptm<-proc.time()
+mod <- glmm(degree ~ 0 + Site, random = list(~ 0 + Species,
+                                             ~ 0 + hab_type,
+                                             ~ 0 + genus,
+                                             ~ 0 + echolocation), varcomps.names = c("Sp", "hab", 'genus', 'echo'), data = degree_df,
+            family.glmm = poisson.glmm, m = 10^3, debug = TRUE)
+proc.time() - ptm
+
+summary(mod)
+mcse(mod)
+se(mod)
 
