@@ -244,10 +244,17 @@ mod <- glmm(degree ~ 0 + Site, random = list(~ 0 + Species,
                                              ~ 0 + hab_type,
                                              ~ 0 + genus,
                                              ~ 0 + echolocation), varcomps.names = c("Sp", "hab", 'genus', 'echo'), data = degree_df,
-            family.glmm = poisson.glmm, m = 10^3, debug = TRUE)
+            family.glmm = poisson.glmm, m = 10^2, debug = TRUE)
 proc.time() - ptm
 
 summary(mod)
 mcse(mod)
 se(mod)
+
+
+mod2 <- glmm(degree ~ 0 + Site + Species, random = list(
+                                             ~ 0 + hab_type,
+                                             ~ 0 + genus,
+                                             ~ 0 + echolocation), varcomps.names = c( "hab", 'genus', 'echo'), data = degree_df,
+            family.glmm = poisson.glmm, m = 10^2, debug = TRUE)
 
