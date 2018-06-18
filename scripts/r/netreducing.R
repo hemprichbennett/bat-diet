@@ -151,7 +151,7 @@ ind <- c('functional complementarity',
 chosen_ind <- ind[args]
 
 #Now do the analysis
-out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 1000, min_nodes = 40, metric_chosen = 'connectance',
+out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
                       type_chosen = 'network', level = 'higher')
 
 
