@@ -153,8 +153,8 @@ chosen_ind <- ind[args]
 #out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 1, min_nodes = 40, metric_chosen = chosen_ind,
 #                      type_chosen = 'network', level = 'higher')
 
-modularity <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
-                          type_chosen = 'modularity', level = 'higher')
+#modularity <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
+#                          type_chosen = 'modularity', level = 'higher')
 #tax_df <- dcast(out_df[which(out_df$included=='included'),], n_used + netnames + metricval ~ Species)
 
 #tax_df$diversity <- sapply(seq(1,nrow(tax_df)), function(x) vegan::diversity(tax_df[x,seq(4, ncol(tax_df)),]))
@@ -164,12 +164,12 @@ outlist <- lapply(ind, function(x) netreducing(input = sites_list, input_type = 
                                                        type_chosen = 'network', level = 'higher'))
 
 bigdf <- do.call(rbind, outlist)
-bigdf <- rbind(bigdf, modularity)
+#bigdf <- rbind(bigdf, modularity)
 
 bigtax <- dcast(bigdf[which(bigdf$included=='included'),], n_used + netnames + metricval + metricused ~ Species)
 
 bigtax$diversity <- sapply(seq(1,nrow(bigtax)), function(x) vegan::diversity(bigtax[x,seq(5, ncol(bigtax)),]))
-write.csv('results/rarifying_networks/reducing_mets.csv')
+write.csv(bigtax, 'results/rarifying_networks/reducing_mets.csv')
 
 sink('results/rarifying_networks/lms.txt')
 for(i in 1:length(unique(bigtax$metricused))){
