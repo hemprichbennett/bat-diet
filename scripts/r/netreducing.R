@@ -1,10 +1,10 @@
-##################################################
+#####Header ####
 ## Project: All bats
 ## Script purpose: Calculating how network metrics change when we adjust the number of bats in a network
 ## Date: 15/06/18
 ## Author: Dave Hemprich-Bennett (hemprich.bennett@gmail.com)
 ## Notes: 
-##################################################
+
 if(interactive()==TRUE){
   library('here')
   library(ggplot2)
@@ -16,10 +16,21 @@ if(interactive()==TRUE){
 }else{
   library(here, lib.loc = '/data/home/btw863/r_packages/')
   library(netReducer, lib.loc = '/data/home/btw863/r_packages/')
+  library(reshape2, lib.loc = '/data/home/btw863/r_packages/')
+  library(ggplot2, lib.loc = '/data/home/btw863/r_packages/')
 }
 
 setwd(here())
 source('scripts/r/r_network_gen.r')
+
+firstup <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  x
+} #A function to capitalise the metric names when making plots
+
+
+#####Format the data ####
+
 
 field_data <- read.csv(here('data/Edited_all_files_with_lat_long_VKedits.csv'), stringsAsFactors = F)
 field_data$SiteAndYear <- paste(field_data$Site, field_data$Year, sep = ', ')
@@ -53,44 +64,10 @@ row_names <- rownames(all_interactions) #Store these as an object as the apply b
 all_interactions <- apply(all_interactions, 2, as.numeric)
 rownames(all_interactions) <- row_names
 
-prey_data <- read.csv('data/taxonomy/order.csv')
-colnames(prey_data) <- c('MOTU', 'Taxa')
-prey_data$MOTU <- as.character(prey_data$MOTU)
-
-
-
-
-###Add the taxonomic information to the interactions for everything
-taxa_mat <- matrix(nrow = 0, ncol = ncol(all_interactions))
-colnames(taxa_mat) <- colnames(all_interactions)
-z <- 1
-for(i in 1: nrow(all_interactions)){   ####THIS NEEDS SOME SERIOUS EDITING BEFORE IT'LL WORK
-  rowname = rownames(all_interactions)[i]
-  if(!rowname %in% prey_data$MOTU){
-    next()
-  }
-  tax = as.character(prey_data[which(prey_data$MOTU == rowname),'Taxa'])
-  if(is.null(nrow(taxa_mat))){ #If its the first iteration there won't be any rownames yet, so the next if statement will fail
-    taxa_mat <- rbind(taxa_mat, as.numeric(all_interactions[i,]))
-    rownames(taxa_mat)[z] <- tax
-    z <- z+1
-  }
-  if(tax %in% rownames(taxa_mat)){
-    to_merge = which(rownames(taxa_mat)==tax)
-    taxa_mat[to_merge,] <- taxa_mat[to_merge,]+ as.numeric(all_interactions[i,])
-  }else{
-    taxa_mat <- rbind(taxa_mat, as.numeric(all_interactions[i,]))
-    rownames(taxa_mat)[z] <- tax
-    z <- z+1
-  }
-}
 
 #####Make a list with a network for each site####
 
 sites_list <- list()
-
-
-
 
 
 for(i in 1:length(unique(names(locations)))){
@@ -129,7 +106,7 @@ for(n in 1:length(sites_list)){
   }
 }
 
-
+#####Data generation ####
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -137,7 +114,7 @@ cat(args, '\n')
 
 args <- as.numeric(args)
 
-
+#args <- 1
 ind <- c('functional complementarity',
          'web asymmetry',
          'Alatalo interaction evenness',
@@ -150,10 +127,61 @@ ind <- c('functional complementarity',
 
 chosen_ind <- ind[args]
 
+
 #Now do the analysis
 out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
                       type_chosen = 'network', level = 'higher')
 
+out_df$netnames <- gsub('DANUM', 'Danum', out_df$netnames)
+out_df$netnames <- gsub('MALIAU', 'Maliau', out_df$netnames)
 
 write.csv(out_df, paste('results/rarifying_networks/reducing_', chosen_ind,'_100.csv', sep =''))
 
+bigtax <- dcast(out_df[which(out_df$included==T),], n_used + netnames + metricval + metricused ~ Species)
+
+bigtax$diversity <- sapply(seq(1,nrow(bigtax)), function(x) vegan::diversity(bigtax[x,seq(5, ncol(bigtax)),]))
+
+#####Plotting ####
+
+palette <- c("#75aa56",
+             "#8259b1",
+             "#be7239")
+
+n_bats_scatter <- ggplot(bigtax, aes(x = n_used, y = metricval, colour= netnames))+ 
+  geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
+  labs(x='Number of bats sampled', y= firstup(chosen_ind))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+n_bats_scatter  
+pdf(paste('plots/netreducing/rarifying_', chosen_ind, 'n_bats.pdf', sep = ''))
+n_bats_scatter
+dev.off()
+
+diversity_scatter <- ggplot(bigtax, aes(x = diversity, y = metricval, colour= netnames))+ 
+  geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
+  labs(x='Shannon diversity', y= firstup(chosen_ind))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+diversity_scatter  
+pdf(paste('plots/netreducing/rarifying_', chosen_ind, 'n_bats.pdf', sep = ''))
+diversity_scatter
+dev.off()
+
+#### Stats ####
+
+multiple_reg <- lm(metricval ~ n_used * netnames * diversity + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
+summary(multiple_reg)
+
+
+multiple_reg_no_sp <- lm(metricval ~ n_used * netnames * diversity, data = bigtax)
+summary(multiple_reg_no_sp)
+
+
+sink(paste('results/rarifying_networks/', chosen_ind, '_lm.txt', sep = ''))
+summary(multiple_reg)
+
+summary(multiple_reg_no_sp)
+
+sink()
