@@ -220,7 +220,7 @@
   
   sitescatter <- ggplot(m , aes(x = clustering, y = value, color = site)) +
     geom_point()+
-    labs(x = 'clustering') +
+    labs(x = 'Clustering (%)', y = NULL) +
     geom_smooth(method = lm, se = T)+
     scale_x_continuous(breaks = seq(91, 98, 1))+
     scale_color_brewer(type = 'qual')+
