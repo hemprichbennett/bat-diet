@@ -128,9 +128,16 @@ ind <- c('functional complementarity',
 chosen_ind <- ind[args]
 
 
+
 #Now do the analysis
-out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
-                      type_chosen = 'network', level = 'higher')
+if(args<11){
+  out_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = chosen_ind,
+                        type_chosen = 'network', level = 'higher')
+}if(args==11){
+  ut_df <- netreducing(input = sites_list, input_type = 'list', n_iterations = 100, min_nodes = 40, metric_chosen = 'modularity',
+                       type_chosen = 'modularity', level = 'higher')
+}
+
 
 out_df$netnames <- gsub('DANUM', 'Danum', out_df$netnames)
 out_df$netnames <- gsub('MALIAU', 'Maliau', out_df$netnames)
