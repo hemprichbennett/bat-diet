@@ -232,3 +232,9 @@
   pdf('plots/MOTU_sites_combined.pdf')
   sitescatter
   dev.off()
+
+  
+  pdf('plots/sitewise_lineplot.pdf')
+  line_plot(input = m, metric = 'metric', network = 'network', clustering = 'clustering', value = 'value')  
+  dev.off()
+  
