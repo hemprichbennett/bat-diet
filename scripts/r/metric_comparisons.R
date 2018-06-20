@@ -79,6 +79,10 @@ for(i in 1:nrow(combns)){
 
 write.csv(random_met_ranges, 'results/randomized_met_ranges.csv')
 
+random_met_ranges <- read.csv('results/randomized_met_ranges.csv', row.names = 1)
+colnames(random_met_ranges) <- gsub('X', '', colnames(random_met_ranges))
+library(ggplot2)
+
 palette <- c("#75aa56",
              "#8259b1",
              "#be7239")
@@ -90,12 +94,12 @@ nest <- ggplot(random_met_ranges[which(random_met_ranges$Metric=='nestedness'),]
     labs(x= 'Nestedness', y= 'Count')+
     scale_color_manual(values=palette)+
     scale_fill_manual(values=palette)+
-    geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='nestedness'),], aes(xintercept =`2.5%`, color = Site), linetype='dashed')+
-    geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='nestedness'),], aes(xintercept =`97.5%`, color = Site), linetype='dashed')+
+    geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='nestedness'),], aes(xintercept =`2.5.`, color = Site), linetype='dashed')+
+    geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='nestedness'),], aes(xintercept =`97.5.`, color = Site), linetype='dashed')+
     geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='nestedness'),], aes(xintercept =original, color = Site), linetype='solid')
 nest
 
-pdf('plots/randomized_ranges/hist_nestedness.pdf')
+pdf('plots/randomized_ranges/hist_nestedness.pdf', width = 11)
 nest
 dev.off()
 
@@ -106,12 +110,12 @@ func <- ggplot(random_met_ranges[which(random_met_ranges$Metric=='functional com
   labs(x= 'Functional complementarity', y= 'Count')+
   scale_color_manual(values=palette)+
   scale_fill_manual(values=palette)+
-  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='functional complementarity'),], aes(xintercept =`2.5%`, color = Site), linetype='dashed')+
-  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='functional complementarity'),], aes(xintercept =`97.5%`, color = Site), linetype='dashed')+
+  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='functional complementarity'),], aes(xintercept =`2.5.`, color = Site), linetype='dashed')+
+  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='functional complementarity'),], aes(xintercept =`97.5.`, color = Site), linetype='dashed')+
   geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='functional complementarity'),], aes(xintercept =original, color = Site), linetype='solid')
 func
 
-pdf('plots/randomized_ranges/hist_func.pdf')
+pdf('plots/randomized_ranges/hist_func.pdf', width = 11)
 func
 dev.off()
 
@@ -122,11 +126,11 @@ niche <- ggplot(random_met_ranges[which(random_met_ranges$Metric=='niche overlap
   labs(x= 'Niche overlap', y= 'Count')+
   scale_color_manual(values=palette)+
   scale_fill_manual(values=palette)+
-  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='niche overlap'),], aes(xintercept =`2.5%`, color = Site), linetype='dashed')+
-  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='niche overlap'),], aes(xintercept =`97.5%`, color = Site), linetype='dashed')+
+  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='niche overlap'),], aes(xintercept =`2.5.`, color = Site), linetype='dashed')+
+  geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='niche overlap'),], aes(xintercept =`97.5.`, color = Site), linetype='dashed')+
   geom_vline(data = random_met_ranges[which(random_met_ranges$Metric=='niche overlap'),], aes(xintercept =original, color = Site), linetype='solid')
 niche
 
-pdf('plots/randomized_ranges/hist_niche.pdf')
+pdf('plots/randomized_ranges/hist_niche.pdf', width = 11)
 niche
 dev.off()
