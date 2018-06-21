@@ -1,4 +1,4 @@
-
+## @knitr inext_setup
 ##################################################
 ## Project: bat-diet (all bats)
 ## Script purpose: using iNEXT to assess the sampling completeness and total diversity of each of my
@@ -12,7 +12,7 @@
 
 dir <- getwd()
 basedir <- strsplit(dir, split ='/')[[1]][2]
-print(basedir)
+#print(basedir)
 if(grepl('data', basedir)){
   library(here, lib.loc = '/data/home/btw863/r_packages/')
   
@@ -27,6 +27,8 @@ if(grepl('data', basedir)){
   library(corrplot)
   library(iNEXT)
   library(DataExplorer)
+  library(knitr)
+  library(kableExtra)
 }
 
 setwd(here())
@@ -64,7 +66,6 @@ sites <- unique(unlist(all_interactions[1,]))
 
 
 
-
 for(i in 1:length(sites)){
   m <- all_interactions[2:nrow(all_interactions),which(all_interactions[1,]==sites[i])]
   colnames(m) = m[1,]
@@ -73,7 +74,7 @@ for(i in 1:length(sites)){
   m <- m[-which(rowSums(m)==0),]
   sites_list[[i]] <- m
 }
-print(sites)
+#print(sites)
 names(sites_list) <- sites
 
 
@@ -97,7 +98,7 @@ inext_list[['all']] <- c(ncol(all_interactions), rowSums(apply(all_interactions[
 inc_all <- iNEXT(inext_list, datatype = 'incidence_freq')
 
 #####Here I replicate the gginext command, but tweak it a bit because it doesn't natively allow it ####
-## @knitr inext_plot
+
 z <- fortify.iNEXT(a)
 z$site_type <- rep(NA, nrow(z))
 z[grep('SAFE', z$site),'site_type'] <- 'Logged'
@@ -159,7 +160,6 @@ g <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site')) +
   geom_line(aes_string(linetype="lty"), lwd=0.5)+
   scale_color_brewer(type= 'qual')
 
-g
 
 g <- g +
   theme(legend.position = "bottom", 
@@ -172,15 +172,21 @@ g <- g +
 
 g <- g + geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)
 g <- g+ theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
+
+## @knitr inext_plot
 g
 
 
-
+## @knitr plotsaving
 pdf('plots/inext/sitewise_all_inext.pdf', width = 10, height = 7)
 g
 dev.off()
 
+jpeg('plots/inext/sitewise_all_inext.jpg', width = 10, height = 7)
+g
+dev.off()
 
+## @knitr inext_dataframe
 ####Rearrange our stats ####
 asymptote_ests <- inc_all$AsyEst
 asymptote_ests <- asymptote_ests[asymptote_ests$Diversity=='Species richness',]
@@ -192,32 +198,12 @@ asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_e
 asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_ests$percent_completeness)*100
 asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
 
+asymptote_ests %>%
+  kable() %>%
+  kable_styling()
 
+
+## @knitr ignore
 write.csv(asymptote_ests, 'results/sitewise_all_bats_inext.csv')
 
 
-
-
-# 
-# 
-# 
-# nofacet <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site')) + 
-#   geom_point(size=3, data=data.sub)+
-#   ylab('OTU diversity') + xlab('Number of bats sampled')+
-#   geom_line(aes_string(linetype="lty"), lwd=0.5)+
-#   scale_color_discrete()+
-#   theme(legend.position = "bottom", 
-#         legend.title=element_blank(),
-#         text=element_text(size=18),
-#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #Get rid of a load of the default crap
-#         panel.background = element_blank(), axis.line = element_line(colour = "black"),
-#         axis.text.x = element_text(size=10),
-#         axis.text.y = element_text(size=8))+
-#   geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)+
-#   theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets  
-# 
-# nofacet
-# 
-# pdf('plots/inext/sitewise_all_bats_motu_inext_nofacet.pdf')
-# nofacet
-# dev.off()
