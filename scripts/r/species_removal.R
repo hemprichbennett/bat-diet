@@ -66,7 +66,7 @@ master_df <- rbind(orig_melted, melted_all)
 master_df$minus_species <- as.factor(master_df$minus_species)
 master_df$minus_species <- relevel(master_df$minus_species, "No species removed")#Makes 'none' the first factor level
 
-master_df$Network <- firstup(master_df$Network)
+master_df$Metric <- firstup(master_df$Metric)
 
 palette <- c("#75aa56",
              "#8259b1",
@@ -76,7 +76,7 @@ sp_plot <- ggplot(master_df, aes(x=minus_species, y = value, colour = Network))+
   geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
   facet_wrap( ~ Metric, scales = 'free')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-                     axis.text.x = element_text(angle = 45, hjust = 1))+
+                     axis.text.x = element_text(angle = 90, hjust = 1))+
   labs(x =NULL, y = NULL)
 sp_plot
 
