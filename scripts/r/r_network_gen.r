@@ -19,10 +19,10 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
     library(stringr, lib.loc = '/data/home/btw863/r_packages/')
     library(reshape, lib.loc = '/data/home/btw863/r_packages/')
   }else{
-    library('bipartite')
-    library('stringr')
-    library('igraph')
-    library('reshape')
+    library(bipartite)
+    library(stringr)
+    library(igraph)
+    library(reshape)
   }
   
   source('scripts/r/The.matrix.reloader.R')
@@ -88,8 +88,8 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
       
       names(nets) <- unique(field_data$SiteAndYear)
       for(i in 1:length(nets)){
-        print(names(nets)[i])
-        print(colnames(nets[[i]]))
+        #print(names(nets)[i])
+        #print(colnames(nets[[i]]))
       }
     }
     if(split_by == 'site'){
@@ -97,8 +97,8 @@ r_network_gen <- function(collapse_species = T, desired_species = NULL, filter_s
       
       names(nets) <- unique(field_data$Site)
       for(i in 1:length(nets)){
-        print(names(nets)[i])
-        print(colnames(nets[[i]]))
+        #print(names(nets)[i])
+        #print(colnames(nets[[i]]))
       }
     }
     
