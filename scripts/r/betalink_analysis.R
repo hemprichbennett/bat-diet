@@ -72,6 +72,10 @@ pdf('plots/beta/betaplot.pdf')
 betaplot
 dev.off()
 
+jpeg('plots/beta/betaplot.jpg' , units = 'in', width = 9, height = 9, res=300)
+betaplot
+dev.off()
+
 
 S_WN <- ggplot(for_plot, aes(S, WN))+ geom_point()+ geom_abline(intercept = 0, slope = 1, linetype="dotted")+ 
   scale_x_continuous(limits = c(0,1))+
