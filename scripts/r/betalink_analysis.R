@@ -1,3 +1,4 @@
+## @knitr betalink_setup_and_plot
 ##################################################
 ## Project: bat diet (all species)
 ## Script purpose: checking the beta-diversity of my networks
@@ -8,7 +9,7 @@
 
 dir <- getwd()
 basedir <- strsplit(dir, split ='/')[[1]][2]
-print(basedir)
+#print(basedir)
 if(grepl('data', basedir)){
   library(here, lib.loc = '/data/home/btw863/r_packages/')
   
@@ -27,7 +28,7 @@ setwd(here())
 source('scripts/r/r_network_gen.r')
 
 
-nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F)
+nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F, split_by = 'site and year')
 names(nets) <- gsub('DANUM', 'Danum', names(nets))
 names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
 
@@ -64,6 +65,9 @@ betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=valu
 
 
 betaplot  
+
+## @knitr betalink_extras
+
 pdf('plots/beta/betaplot.pdf')
 betaplot
 dev.off()
