@@ -182,7 +182,7 @@ pdf('plots/inext/sitewise_all_inext.pdf', width = 10, height = 7)
 g
 dev.off()
 
-jpeg('plots/inext/sitewise_all_inext.jpg', width = 10, height = 7)
+jpeg('plots/inext/sitewise_all_inext.jpg', units = 'in', width = 9, height = 9, res=300)
 g
 dev.off()
 
@@ -196,7 +196,10 @@ asymptote_ests <- asymptote_ests[order(asymptote_ests$Site),]
 colnames(asymptote_ests)[8] <- 'number of samples'
 asymptote_ests$percent_completeness <- (asymptote_ests$Observed*100)/asymptote_ests$Estimator
 asymptote_ests$N_samples_reqd <- (asymptote_ests$`number of samples`/asymptote_ests$percent_completeness)*100
-asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5,6,7)]
+asymptote_ests <- asymptote_ests[,c(1,3,4,9,8,10,5)]
+
+colnames(asymptote_ests) <- c('Site', 'Observed number of MOTU', 'Estimated total number of MOTU', 'Estimated percent completeness',
+                              'Number of samples', 'Estimated number of samples required', 'Standard error of total estimate')
 
 asymptote_ests %>%
   kable() %>%
