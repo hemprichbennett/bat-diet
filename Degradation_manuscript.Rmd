@@ -2,7 +2,7 @@
 title: "Degradation"
 author: "David Hemprich-Bennett"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output: pdf_document
 #bibliography: /users/davidbennett/Dropbox/Bibtex/library.bib
 #bibliography: '~/Dropbox/Bibtex/My_Library.bib'
 
@@ -30,11 +30,15 @@ read_chunk('scripts/r/sample_size.R')
 read_chunk('scripts/r/species_removal.R')
 ```
 
+```{r echo=FALSE, cache=FALSE}
+read_chunk('scripts/r/sitewise_otu_conclusion_check_generation.R')
+```
+
 #Abstract
  
 #Introduction
 
-Habitat loss and degradation are the most common threat to the persistence of terrestrial species (WWF, 2016), affecting large areas of palaeotropical forests. This is particularly true of Borneo, a biodiversity hotspot in the Malay Archipelago where 62% of remaining forest has been classified as being degraded (Bryan et al., 2013). Although primary forests have been shown to be ‘irreplacable’ in terms of biodiversity, logged forests are more biodiverse than secondary forest and so are worthy of conservation concern (Gibson et al., 2011). Despite the rate of global deforestation having reduced in the last 25 years (FAO Forestry, 2015), attention must be given to degraded forest due to the low priority given to their protection against agricultural expansion (Gibbs et al., 2010).
+Habitat loss and degradation are the most common threat to the persistence of terrestrial species (WWF, 2016), affecting large areas of palaeotropical forests. This is particularly true of Borneo, a biodiversity hotspot in the Malay Archipelago where 62% of remaining forest has been classified as being degraded (Bryan et al., 2013). Although primary forests have been shown to be ‘irreplacable’ in terms of biodiversity, logged forests are more biodiverse than secondary forest and so are worthy of conservation concern (Gibson et al., 2011). Despite the rate of global deforestation having reduced in the last 25 years (FAO Forestry, 2015), attention must be given to degraded forest due to the low priority given to their protection against agricultural expansion (Gibbs et al., 2010). 
 
 #Causes of degradation
 * A natural process, being accelerated in the anthropocene
@@ -52,7 +56,7 @@ Habitat loss and degradation are the most common threat to the persistence of te
     * Lower diversity of bats captured at SAFE than other two sites (need to use iNEXT to show this)
     * Insect diversity literature for Borneo?
 * What we know from the bats of the neotropics
-* Bat diet %Cite Hernani's stuff
+* Bat diet <!--Cite Hernani's stuff-->
 *We need to be careful when making comparisons, as Zhan and MacIsaac 2015 -  Rare biosphere exploration using high-throughput sequencing: research progress and perspectives - state, much variation is caused by the random encounter of rare sequences when sampling or in the lab. This can cause erroneous findings of beta diversity
 
 *Protected areas generally have higher biodiversity than non-protected areas [@Gray2016]
@@ -85,15 +89,29 @@ in Figure \ref{fig:inext} we see the different rates of MOTU accumulation at eac
 ```
 
 
+As shown in Figure \ref{fig:sp_removal}, when removing most species there is little effect on the networks, however the effect of removing Hipposideros cervinus can be substantial, for example the rank order of the networks for the metric 'functional complementarity' is totally reversed, with Danum going from being the most complementary network when the full sample sizes are used, to the least complementary when *H. cervinus* is removed. 
 
 ##Beta-diversity
 
-```{r betalink_setup_and_plot, echo=FALSE, message=FALSE}
-
-```
+![captionabc](plots/beta/betaplot.jpg)
 
 
 ##Networks and reliability of MOTU
 
 
+![captionabc](plots/MOTU_sites_combined.jpg)
+
+![captionabc](plots/sitewise_lineplot.jpg)
+
+##Taxa
+
+![The proportion of bats containing each prey order obtained](plots/sitewise_proportion_of_bats_containing.pdf)
+
+![The proportion of bats containing each prey order obtained]()
+```
+
 #Discussion
+
+
+## The issues of comparing greatly incomplete networks
+Danum showed far higher levels of functional complementarity than Maliau and SAFE when compared at their fully-sampled extent, but this seems to have been entirely driven by *Hipposideros cervinus*, as when they are removed then the rank order switches, with Danum having the lowest complementarity.

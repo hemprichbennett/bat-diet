@@ -1,0 +1,306 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Degradation},
+            pdfauthor={David Hemprich-Bennett},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Degradation}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{David Hemprich-Bennett}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{21 June, 2018}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+
+\begin{document}
+\maketitle
+
+\section{Abstract}\label{abstract}
+
+\section{Introduction}\label{introduction}
+
+Habitat loss and degradation are the most common threat to the
+persistence of terrestrial species (WWF, 2016), affecting large areas of
+palaeotropical forests. This is particularly true of Borneo, a
+biodiversity hotspot in the Malay Archipelago where 62\% of remaining
+forest has been classified as being degraded (Bryan et al., 2013).
+Although primary forests have been shown to be `irreplacable' in terms
+of biodiversity, logged forests are more biodiverse than secondary
+forest and so are worthy of conservation concern (Gibson et al., 2011).
+Despite the rate of global deforestation having reduced in the last 25
+years (FAO Forestry, 2015), attention must be given to degraded forest
+due to the low priority given to their protection against agricultural
+expansion (Gibbs et al., 2010).
+
+\section{Causes of degradation}\label{causes-of-degradation}
+
+\begin{itemize}
+\tightlist
+\item
+  A natural process, being accelerated in the anthropocene
+\item
+  Define it. Acknowledge that there's bloody loads of definitions
+\item
+  Borneo-specific stuff
+\item
+  Habitat loss and degradation combined threaten 44.8 percent of species
+  (WWF Living planet report
+\item
+  (from bats in the anthropocene) A pan-tropical meta-analysis of
+  land-use change studies points to the irreplaceable value of
+  old-growth forests, but also highlights the high species diversity
+  found in regenerating logged forests compared to secondary forests
+  (Gibson et al. 2011)*
+\end{itemize}
+
+\section{Consequences of degradation}\label{consequences-of-degradation}
+
+\begin{itemize}
+\tightlist
+\item
+  Need to consider the habitat effects for both secondary consumers,
+  primary consumers and primary producers
+\item
+  Loss of roost sites
+\item
+  Work on birds in Brazil's Atlantic rainforest (unpublished) showed
+  that the loss of specialist insectivorous birds led to an increase in
+  insect herbivores \%(see note on Cristina Banks-Leite from the
+  Ceesymposium)
+\item
+  Matrix type as well as distance for fragmentation is important
+\item
+  General trend towards functional homogenisation
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Lower diversity of bats captured at SAFE than other two sites (need
+    to use iNEXT to show this)
+  \item
+    Insect diversity literature for Borneo?
+  \end{itemize}
+\item
+  What we know from the bats of the neotropics
+\item
+  Bat diet *We need to be careful when making comparisons, as Zhan and
+  MacIsaac 2015 - Rare biosphere exploration using high-throughput
+  sequencing: research progress and perspectives - state, much variation
+  is caused by the random encounter of rare sequences when sampling or
+  in the lab. This can cause erroneous findings of beta diversity
+\end{itemize}
+
+*Protected areas generally have higher biodiversity than non-protected
+areas {[}@Gray2016{]}
+
+\section{Methods}\label{methods}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|r|r|r|r}
+\hline
+  & Danum & Maliau & SAFE & SBE\\
+\hline
+Hice & 186.000000 & 97.000000 & 112.000000 & 57\\
+\hline
+Hidi & 2.000000 & 10.000000 & 3.000000 & 0\\
+\hline
+Hidy & 0.000000 & 13.000000 & 9.000000 & 0\\
+\hline
+Hiri & 3.000000 & 1.000000 & 14.000000 & 0\\
+\hline
+Keha & 3.000000 & 0.000000 & 23.000000 & 0\\
+\hline
+Kein & 29.000000 & 11.000000 & 46.000000 & 0\\
+\hline
+Kepa & 21.000000 & 1.000000 & 6.000000 & 0\\
+\hline
+Rhbo & 1.000000 & 28.000000 & 10.000000 & 0\\
+\hline
+Rhse & 10.000000 & 4.000000 & 14.000000 & 0\\
+\hline
+Rhtr & 14.000000 & 19.000000 & 29.000000 & 0\\
+\hline
+Shannon diversity & 1.128072 & 1.512298 & 1.804932 & 0\\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Results}\label{results}
+
+\subsection{Sample size effects}\label{sample-size-effects}
+
+in Figure \ref{fig:inext} we see the different rates of MOTU
+accumulation at each site.
+
+\begin{figure}
+\centering
+\includegraphics{Degradation_manuscript_files/figure-latex/inext_plot-1.pdf}
+\caption{\label{fig:inext}interpolation and extrapolation of MOTU
+diversity at each site}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|r|r|r|r|r|r}
+\hline
+  & Site & Observed number of MOTU & Estimated total number of MOTU & Estimated percent completeness & Number of samples & Estimated number of samples required & Standard error of total estimate\\
+\hline
+10 & all & 3535 & 6217.107 & 56.85924 & 736 & 1294.4245 & 166.351\\
+\hline
+7 & Danum & 1938 & 3953.179 & 49.02384 & 269 & 548.7127 & 164.658\\
+\hline
+4 & Maliau & 1227 & 2798.523 & 43.84456 & 185 & 421.9452 & 163.771\\
+\hline
+1 & SAFE & 1524 & 3979.952 & 38.29192 & 282 & 736.4478 & 225.160\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics{Degradation_manuscript_files/figure-latex/species_removal-1.pdf}
+\caption{\label{fig:sp_removal}The importance of each bat species to
+their network}
+\end{figure}
+
+As shown in Figure \ref{fig:sp_removal}, when removing most species
+there is little effect on the networks, however the effect of removing
+Hipposideros cervinus can be substantial, for example the rank order of
+the networks for the metric `functional complementarity' is totally
+reversed, with Danum going from being the most complementary network
+when the full sample sizes are used, to the least complementary when
+\emph{H. cervinus} is removed.
+
+\subsection{Beta-diversity}\label{beta-diversity}
+
+\begin{figure}
+\centering
+\includegraphics{plots/beta/betaplot.jpg}
+\caption{captionabc}
+\end{figure}
+
+\subsection{Networks and reliability of
+MOTU}\label{networks-and-reliability-of-motu}
+
+\begin{figure}
+\centering
+\includegraphics{plots/MOTU_sites_combined.jpg}
+\caption{captionabc}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{plots/sitewise_lineplot.jpg}
+\caption{captionabc}
+\end{figure}
+
+\subsection{Taxa}\label{taxa}
+
+\begin{figure}
+\centering
+\includegraphics{plots/sitewise_proportion_of_bats_containing.pdf}
+\caption{The proportion of bats containing each prey order obtained}
+\end{figure}
+
+\includegraphics{} ```
+
+\section{Discussion}\label{discussion}
+
+\subsection{The issues of comparing greatly incomplete
+networks}\label{the-issues-of-comparing-greatly-incomplete-networks}
+
+Danum showed far higher levels of functional complementarity than Maliau
+and SAFE when compared at their fully-sampled extent, but this seems to
+have been entirely driven by \emph{Hipposideros cervinus}, as when they
+are removed then the rank order switches, with Danum having the lowest
+complementarity.
+
+
+\end{document}
