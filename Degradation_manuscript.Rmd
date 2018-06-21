@@ -7,27 +7,34 @@ output: html_document
 #bibliography: '~/Dropbox/Bibtex/My_Library.bib'
 
 ---
-```{r setup, include=FALSE}
+
+```{r echo=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = F)
-```
-```{r otu_conclusion_check, echo=FALSE}
-read_chunk('scripts/r/otu_conclusion_check_output_use.R')
-```
-```{r otu_setup, echo=FALSE}
-<<setup>>
 ```
 
-```{r inext_chunk, echo=FALSE}
-read_chunk('scripts/r/all_bats_inext.R')
+
+
+```{r echo=FALSE, cache=FALSE}
+read_chunk('scripts/r/sitewise_inext.R')
 ```
-```{r inext_setup, echo=FALSE}
-<<inext_setup>>
+
+```{r echo=FALSE, cache=FALSE}
+read_chunk('scripts/r/betalink_analysis.R')
 ```
+
+```{r echo=FALSE, cache=FALSE}
+read_chunk('scripts/r/sample_size.R')
+```
+
+```{r echo=FALSE, cache=FALSE}
+read_chunk('scripts/r/species_removal.R')
+```
+
 #Abstract
  
 #Introduction
 
+Habitat loss and degradation are the most common threat to the persistence of terrestrial species (WWF, 2016), affecting large areas of palaeotropical forests. This is particularly true of Borneo, a biodiversity hotspot in the Malay Archipelago where 62% of remaining forest has been classified as being degraded (Bryan et al., 2013). Although primary forests have been shown to be ‘irreplacable’ in terms of biodiversity, logged forests are more biodiverse than secondary forest and so are worthy of conservation concern (Gibson et al., 2011). Despite the rate of global deforestation having reduced in the last 25 years (FAO Forestry, 2015), attention must be given to degraded forest due to the low priority given to their protection against agricultural expansion (Gibbs et al., 2010).
 
 #Causes of degradation
 * A natural process, being accelerated in the anthropocene
@@ -49,23 +56,44 @@ read_chunk('scripts/r/all_bats_inext.R')
 *We need to be careful when making comparisons, as Zhan and MacIsaac 2015 -  Rare biosphere exploration using high-throughput sequencing: research progress and perspectives - state, much variation is caused by the random encounter of rare sequences when sampling or in the lab. This can cause erroneous findings of beta diversity
 
 *Protected areas generally have higher biodiversity than non-protected areas [@Gray2016]
+
 #Methods
 
+```{r sample_count_setup, echo=FALSE, message=FALSE, warning=FALSE}
 
+```
 
 
 #Results
-```{r allscatter, echo=FALSE}
-<<all_scatterplots>>
-``` 
 
+##Sample size effects
+```{r inext_setup, echo=FALSE, message=FALSE}
 
-```{r lineplot, echo=FALSE}
-###<<lineplot>>
-``` 
-
-```{r fc_scat, echo=FALSE}
-<<funct_comp_scatter>>
 ```
+
+in Figure \ref{fig:inext} we see the different rates of MOTU accumulation at each site.
+
+```{r inext_plot, echo = FALSE, message=FALSE, fig.width=7,fig.height=6,fig.cap="\\label{fig:inext}interpolation and extrapolation of MOTU diversity at each site"}
+```
+
+```{r inext_dataframe, echo =FALSE, message=FALSE}
+
+```
+
+```{r species_removal, echo =FALSE, message=FALSE, fig.width=10,fig.height=10,fig.cap="\\label{fig:sp_removal}The importance of each bat species to their network"}
+
+```
+
+
+
+##Beta-diversity
+
+```{r betalink_setup_and_plot, echo=FALSE, message=FALSE}
+
+```
+
+
+##Networks and reliability of MOTU
+
 
 #Discussion
