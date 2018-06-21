@@ -1,4 +1,4 @@
-  ## @knitr setup
+  ## @knitr otu_setup
   
   #setwd()
   
@@ -167,7 +167,7 @@
   
   
   setwd(here())
-  getwd()
+ # getwd()
   
   filenames <- list.files(pattern = 'all_post_QC_otus.txt.table_binary.out', recursive = T)
   filenames <- filenames
@@ -228,13 +228,24 @@
     theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))+#strip stuff sorts the facet labels, spacing adjusts the space between facets
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"))
-  print(sitescatter)
+## @knitr otu_scatterplot
+  sitescatter
+  
+## @knitr otu_lineplot
+  
+  line_plot(input = m, metric = 'metric', network = 'network', clustering = 'clustering', value = 'value')  
+  
+## @knitr plot_saving  
+  sitescatter
   pdf('plots/MOTU_sites_combined.pdf')
+  sitescatter
+  dev.off()
+  jpeg('plots/MOTU_sites_combined.jpg', width = 7, height = 7, units = 'in', res = 300)
   sitescatter
   dev.off()
 
   
-  pdf('plots/sitewise_lineplot.pdf')
+  jpeg('plots/sitewise_lineplot.jpg', width = 7, height = 7, units = 'in', res = 300)
   line_plot(input = m, metric = 'metric', network = 'network', clustering = 'clustering', value = 'value')  
   dev.off()
   
