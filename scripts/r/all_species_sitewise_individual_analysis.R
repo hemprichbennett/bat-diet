@@ -204,6 +204,10 @@ pdf('plots/sitewise_proportion_of_bats_containing.pdf')
 tiles
 dev.off()
 
+jpeg('plots/sitewise_proportion_of_bats_containing.pdf', units = 'in', width = 9, height = 9, res=300)
+tiles
+dev.off()
+
 #now make a separate dataframe for analysing with a glmm
 # order_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
 # order_df <- melt(order_df, id.vars = c('Sample', 'Species', 'Site'))
