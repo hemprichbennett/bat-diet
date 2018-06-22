@@ -62,7 +62,14 @@ betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=valu
              nrow = 3)+
   labs(x= NULL, y = NULL)
 
-
+species_diss <- ggplot(for_plot, aes(i, fct_rev(j)))+ geom_point(aes(size=S))+
+  scale_colour_gradient(low = "white",
+                        high = "blue", limits = c(0,1))+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = 'bottom')+
+  labs(x= NULL, y = NULL)
 
 betaplot  
 
@@ -125,6 +132,11 @@ pdf('plots/beta/wn_os.pdf')
 WN_OS
 dev.off()
 
+pdf('plots/beta/species_diss.pdf')
+species_diss
+dev.off()
+
+
 
 sink('results/betadiversity/s_wn.txt')
 summary(lm(S ~ WN, data = for_plot))
@@ -141,3 +153,4 @@ sink()
 sink('results/betadiversity/wn_os.txt')
 summary(lm(WN ~ OS, data = for_plot))
 sink()
+
