@@ -76,7 +76,7 @@ rownames(out_df) %<>%
   gsub('Phat', 'Phoniscus atrox', .)%<>%
   gsub('Phbr', 'Philetor brachypterus', .)%<>%
   gsub('Pija', 'Pipistrellus javanicus', .)%<>%
-  gsub('Pite', 'Pipistrellus tenusi', .)%<>%
+  gsub('Pite', 'Pipistrellus tenuis', .)%<>%
   gsub('Rhac', 'Rhinolophus acuminatus', .)%<>%
   gsub('Rhaf', 'Rhinolophus affinis', .)%<>%
   gsub('Rhbo', 'Rhinolophus borneensis', .)%<>%
