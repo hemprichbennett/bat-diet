@@ -148,7 +148,7 @@ all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
 tax_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
 tax_df <- melt(tax_df, id.vars = c('Sample', 'Species', 'Site'))
 colnames(tax_df)[c(4,5)] <- c('Order', 'Present/absent')
-tax_df$`Present/absent` <- as.integer(tax_df$`Present/absent`)
+#tax_df$`Present/absent` <- as.integer(tax_df$`Present/absent`)
 tax_df$`Present/absent` <- ifelse(tax_df$`Present/absent`== 0, 0, 1)
 
 prop_present <- sapply(unique(tax_df[,c('Species', 'Site', 'Order')]),  function(x) as.character(x))
@@ -204,7 +204,7 @@ pdf('plots/sitewise_proportion_of_bats_containing.pdf')
 tiles
 dev.off()
 
-jpeg('plots/sitewise_proportion_of_bats_containing.pdf', units = 'in', width = 9, height = 9, res=300)
+jpeg('plots/sitewise_proportion_of_bats_containing.jpg', units = 'in', width = 9, height = 9, res=300)
 tiles
 dev.off()
 
