@@ -151,6 +151,29 @@ longtax <- melt(bigtax, id.vars = c('netnames', 'n_used', 'metricused', 'metricv
 colnames(longtax)[5] <- 'Species'
 bigtax$diversity <- sapply(seq(1,nrow(bigtax)), function(x) vegan::diversity(bigtax[x,seq(5, ncol(bigtax)),]))
 
+#### Stats ####
+
+multiple_reg <- lm(metricval ~ n_used * netnames * diversity + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
+summary(multiple_reg)
+
+
+multiple_reg_no_sp <- lm(metricval ~ n_used * netnames * diversity, data = bigtax)
+summary(multiple_reg_no_sp)
+
+multiple_reg_no_div <- lm(metricval ~ n_used * netnames  + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
+summary(multiple_reg_no_div)
+
+
+
+sink(paste('results/rarifying_networks/', chosen_ind, '_lm.txt', sep = ''))
+summary(multiple_reg)
+
+summary(multiple_reg_no_sp)
+
+summary(multiple_reg_no_div)
+
+sink()
+
 #####Plotting ####
 
 palette <- c("#75aa56",
@@ -191,23 +214,3 @@ pdf(paste('plots/netreducing/rarifying_', chosen_ind, 'sp_n.pdf', sep = ''))
 sp_scatter
 dev.off()
 
-#### Stats ####
-
-multiple_reg <- lm(metricval ~ n_used * netnames * diversity + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
-summary(multiple_reg)
-
-
-multiple_reg_no_sp <- lm(metricval ~ n_used * netnames * diversity, data = bigtax)
-summary(multiple_reg_no_sp)
-
-multiple_reg_no_div <- lm(metricval ~ n_used * netnames  + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
-summary(multiple_reg_no_div)
-
-
-
-sink(paste('results/rarifying_networks/', chosen_ind, '_lm.txt', sep = ''))
-summary(multiple_reg)
-
-summary(multiple_reg_no_sp)
-
-sink()
