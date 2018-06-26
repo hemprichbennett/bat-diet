@@ -1,0 +1,70 @@
+
+Call:
+lm(formula = metricval ~ n_used * netnames * diversity + Hice + 
+    Hidi + Hidy + Hiri + Keha + Kein + Kepa + Rhbo + Rhse + Rhtr, 
+    data = bigtax)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.33510 -0.01427  0.00142  0.01511  0.29518 
+
+Coefficients:
+                                  Estimate Std. Error  t value Pr(>|t|)    
+(Intercept)                     -8.530e-01  6.412e-03 -133.028  < 2e-16 ***
+n_used                          -3.144e-04  7.887e-05   -3.987 6.71e-05 ***
+netnamesMaliau                   3.397e-01  1.560e-02   21.776  < 2e-16 ***
+netnamesSAFE                     4.579e-01  1.416e-02   32.342  < 2e-16 ***
+diversity                        4.310e-01  5.797e-03   74.361  < 2e-16 ***
+Hice                             3.975e-04  4.065e-05    9.779  < 2e-16 ***
+Hidi                            -3.480e-03  1.781e-04  -19.538  < 2e-16 ***
+Hidy                            -2.963e-03  1.358e-04  -21.821  < 2e-16 ***
+Hiri                            -2.190e-03  1.355e-04  -16.169  < 2e-16 ***
+Keha                            -1.136e-03  9.979e-05  -11.382  < 2e-16 ***
+Kein                             1.017e-03  5.594e-05   18.188  < 2e-16 ***
+Kepa                            -3.010e-03  1.197e-04  -25.149  < 2e-16 ***
+Rhbo                             9.655e-04  9.508e-05   10.155  < 2e-16 ***
+Rhse                            -1.766e-03  1.177e-04  -15.001  < 2e-16 ***
+Rhtr                             9.723e-04  7.342e-05   13.242  < 2e-16 ***
+n_used:netnamesMaliau           -9.692e-04  1.889e-04   -5.131 2.89e-07 ***
+n_used:netnamesSAFE             -1.337e-03  1.447e-04   -9.240  < 2e-16 ***
+n_used:diversity                 2.135e-04  6.285e-05    3.398 0.000680 ***
+netnamesMaliau:diversity        -1.997e-01  1.117e-02  -17.869  < 2e-16 ***
+netnamesSAFE:diversity          -2.830e-01  9.170e-03  -30.859  < 2e-16 ***
+n_used:netnamesMaliau:diversity  4.356e-04  1.317e-04    3.308 0.000942 ***
+n_used:netnamesSAFE:diversity    6.291e-04  9.187e-05    6.848 7.59e-12 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.035 on 59791 degrees of freedom
+Multiple R-squared:  0.8968,	Adjusted R-squared:  0.8967 
+F-statistic: 2.473e+04 on 21 and 59791 DF,  p-value: < 2.2e-16
+
+
+Call:
+lm(formula = metricval ~ n_used * netnames * diversity, data = bigtax)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.33969 -0.01437  0.00181  0.01523  0.30320 
+
+Coefficients:
+                                  Estimate Std. Error  t value Pr(>|t|)    
+(Intercept)                     -8.532e-01  6.531e-03 -130.639  < 2e-16 ***
+n_used                           2.527e-04  6.395e-05    3.952 7.77e-05 ***
+netnamesMaliau                   3.401e-01  1.589e-02   21.406  < 2e-16 ***
+netnamesSAFE                     4.458e-01  1.441e-02   30.941  < 2e-16 ***
+diversity                        4.294e-01  5.903e-03   72.746  < 2e-16 ***
+n_used:netnamesMaliau           -5.788e-04  1.918e-04   -3.018 0.002546 ** 
+n_used:netnamesSAFE             -3.644e-04  1.443e-04   -2.525 0.011581 *  
+n_used:diversity                -2.155e-04  5.710e-05   -3.774 0.000161 ***
+netnamesMaliau:diversity        -2.001e-01  1.138e-02  -17.582  < 2e-16 ***
+netnamesSAFE:diversity          -2.768e-01  9.334e-03  -29.652  < 2e-16 ***
+n_used:netnamesMaliau:diversity  2.769e-04  1.333e-04    2.077 0.037776 *  
+n_used:netnamesSAFE:diversity    1.979e-04  9.196e-05    2.152 0.031371 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.03565 on 59801 degrees of freedom
+Multiple R-squared:  0.8929,	Adjusted R-squared:  0.8928 
+F-statistic: 4.531e+04 on 11 and 59801 DF,  p-value: < 2.2e-16
+
