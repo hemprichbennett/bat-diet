@@ -96,7 +96,7 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
 
   if(collapse_species==T){
 
-    nets <- lapply(unique(field_data$SiteAndYear), function(i) the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2', species.column = "Species", split.by.column = "SiteAndYear", split.by.var = i, OTU.matrix = all_interactions))
+    nets <- lapply(unique(field_data$Site), function(i) the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2', species.column = "Species", split.by.column = "Site", split.by.var = i, OTU.matrix = all_interactions))
 
     names(nets) <- unique(field_data$SiteAndYear)
     for(i in 1:length(nets)){
