@@ -262,3 +262,59 @@ mod2 <- glmm(degree ~ 0 + Site + Species, random = list(
                                              ~ 0 + echolocation), varcomps.names = c( "hab", 'genus', 'echo'), data = degree_df,
             family.glmm = poisson.glmm, m = 10^2, debug = TRUE)
 
+
+#####Simple linear model ####
+simple_lm <- lm(degree ~ Site, degree_df)
+summary(simple_lm)
+
+sp_lm <- lm(degree ~ Site + Species, degree_df)
+summary(sp_lm)
+
+sp_int_lm <- lm(degree ~ Site * Species, degree_df)
+summary(sp_int_lm)
+
+step.model <- MASS::stepAIC(sp_lm, direction = "both", 
+                      trace = FALSE)
+summary(step.model)
+
+
+TukeyHSD(aov(degree~ Site, degree_df))
+
+library(plm)
+library(car)       # Companion to applied regression 
+fixed.dum <- lm(degree ~ Site + factor(Species) - 1, data = degree_df)
+summary(fixed.dum)
+
+
+fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
+summary(fixed_hab)
+
+anova(fixed.dum, fixed_hab)
+
+# yhat <- fixed.dum$fitted
+# scatterplot(yhat ~ degree_df$Site | degree_df$Species,  xlab ="Site", ylab ="yhat", boxplots = FALSE,smooth = FALSE)
+# abline(lm(dataPanel101$y~dataPanel101$x1),lwd=3, col="red")
+
+
+#These aren't working
+fixed <- plm(degree ~ Site, data=degree_df[,seq(1,3)], model="within")
+summary(fixed)
+
+
+
+# lmp <- function (modelobject) {
+#   if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+#   f <- summary(modelobject)$fstatistic
+#   p <- pf(f[1],f[2],f[3],lower.tail=F)
+#   attributes(p) <- NULL
+#   return(p)
+# } #We can't directly access a model's p-value for some reason, this function does it https://stackoverflow.com/questions/5587676/pull-out-p-values-and-r-squared-from-a-linear-regression
+# 
+
+# summary_df <- data.frame(r2=c(summary(simple_lm)$adj.r.squared, summary(sp_lm)$adj.r.squared, summary(sp_int_lm)$adj.r.squared),
+#                          F=c(summary(simple_lm)$fstatistic[1], summary(sp_lm)$fstatistic[1], summary(sp_int_lm)$fstatistic[1]),
+#                          p=c(lmp(simple_lm), lmp(sp_lm), lmp(sp_int_lm)))
+# 
+# rownames(summary_df) <- c('simple_lm', 'sp_lm', 'sp_int_lm')
+# summary_df
+# t(summary_df)
