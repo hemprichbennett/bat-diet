@@ -143,7 +143,7 @@ if(args==11){
 out_df$netnames <- gsub('DANUM', 'Danum', out_df$netnames)
 out_df$netnames <- gsub('MALIAU', 'Maliau', out_df$netnames)
 
-#write.csv(out_df, paste('results/rarifying_networks/reducing_', chosen_ind,'_100.csv', sep =''))
+write.csv(out_df, paste('results/rarifying_networks/reducing_', chosen_ind,'_100.csv', sep =''))
 
 bigtax <- dcast(out_df[which(out_df$included==T),], n_used + netnames + metricval + metricused ~ Species)
 
