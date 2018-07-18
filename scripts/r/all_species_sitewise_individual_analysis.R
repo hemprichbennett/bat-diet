@@ -117,6 +117,8 @@ all_ecology <- cbind(rownames(all_ecology), all_ecology)
 #write.csv(all_ecology, 'all_ecology_1.csv')
 #all_ecology <- read.csv('all_ecology_1.csv')
 #####Add some taxonomic information
+write.csv(taxa_mat, 'shiny/order_composition/order_mat.csv')
+
 colnames(all_ecology)[c(1:2)] <- c('Sample','Site')
 t_taxa <- t(taxa_mat)
 t_taxa <- cbind(t_taxa, rownames(t_taxa))
@@ -142,6 +144,8 @@ save.image('data/output_data/sitewise_all_individual_info.RDS')
 #####Local work ####
 load('data/output_data/sitewise_all_individual_info.RDS')
 all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
+
+
 
 #Look at the occurence of taxa in each species
 
@@ -282,6 +286,21 @@ TukeyHSD(aov(degree~ Site, degree_df))
 
 library(plm)
 library(car)       # Companion to applied regression 
+library(magrittr)
+
+degree_df$Species %<>%
+  gsub('Hice', 'Hipposideros cervinus', .)%<>%
+  gsub('Hidi', 'Hipposideros diadema', .)%<>%
+  gsub('Hidy', 'Hipposideros dyacorum', .)%<>%
+  gsub('Hiri', 'Hipposideros ridleyi', .)%<>%
+  gsub('Keha', 'Kerivoula hardwickii', .)%<>%
+  gsub('Kein', 'Kerivoula intermedia', .)%<>%
+  gsub('Kepa', 'Kerivoula papillosa', .)%<>%
+  gsub('Kepe', 'Kerivoula pellucida', .)%<>%
+  gsub('Rhbo', 'Rhinolophus borneensis', .)%<>%
+  gsub('Rhse', 'Rhinolophus sedulus', .)%<>%
+  gsub('Rhtr', 'Rhinolophus trifoliatus', .)
+
 fixed.dum <- lm(degree ~ Site + factor(Species) - 1, data = degree_df)
 summary(fixed.dum)
 
@@ -291,13 +310,111 @@ summary(fixed_hab)
 
 anova(fixed.dum, fixed_hab)
 
+sp_ridge <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
+  geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
+  theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
+  scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
+  scale_x_continuous(expand = c(0.01, 0)) + #Make the space between the labels and plot smaller
+  scale_y_discrete(expand = c(0.01, 0))+ #Make it so the top series actually fits in the plot
+  ylab(NULL)+ xlab('Number of prey OTUs')+
+  facet_wrap( ~ Species, ncol=5)+ #free_x is required so that the x-axes aren't all constrained to showing the same thing
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),#strip stuff sorts the facet labels, spacing adjusts the space between facets
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        text = element_text(size=12))+
+  theme_bw()+
+   theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+         strip.text = element_text(face = "italic")) #This makes the facet titles italic)
+
+sp_ridge
+
+pdf('plots/degree_ridges.pdf', width = 10)
+sp_ridge
+dev.off()
+
+jpeg('plots/degree_ridges.jpg', units = 'in', width = 9, height = 9, res=300)
+sp_ridge
+dev.off()
+
+#For presentation
+
+smallersp_ridge <- ggplot(degree_df[-which(!degree_df$Species %in% c(c('Kerivoula intermedia', 'Kerivoula papillosa', 'Rhinolophus borneensis', 'Rhinolophus sedulus', 'Rhinolophus trifoliatus'))),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
+  geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
+  theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
+  scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
+  scale_x_continuous(expand = c(0.01, 0)) + #Make the space between the labels and plot smaller
+  scale_y_discrete(expand = c(0.01, 0))+ #Make it so the top series actually fits in the plot
+  ylab('Number of bats, Site')+ xlab('Number of prey OTUs')+
+  facet_wrap( ~ Species, ncol=5)+ #free_x is required so that the x-axes aren't all constrained to showing the same thing
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),#strip stuff sorts the facet labels, spacing adjusts the space between facets
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        text = element_text(size=12))+
+  theme_bw()+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+        strip.text = element_text(face = "italic"), 
+        axis.text=element_text(size=15), axis.title=element_text(size=16,face="bold"), 
+        legend.text = element_text(colour=, size=15),
+        legend.title = element_text(size=15, face="bold"))
+
+smallersp_ridge
+
+pdf('plots/presentation_degree_ridges.pdf', width = 13)
+smallersp_ridge
+dev.off()
+
+
+
+####for full corrplot ####
+
+library(corrplot)
+
+taxa_for_cor <- t(taxa_mat)
+cormat <- round(cor(taxa_for_cor),2)
+res1 <- cor.mtest(taxa_mat, conf.level = .95)
+
+taxa_corr <- corrplot(cormat, method = "circle", p.mat = res1$p, sig.level = .05, type = 'upper', order = 'AOE',
+                      tl.col = "black", tl.srt = 45, insig = 'blank',
+                      bg = "black")
+
+#### manipulate the degree for corplot ####
+
+
+n_matches <- 4
+for_bigmat <- t(taxa_mat[,which(colSums(taxa_mat)>n_matches)])
+if(0 %in% colSums(for_bigmat)){
+  for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)==0)]
+}
+
+big_cor <- for_bigmat
+bigcormat <- round(cor(big_cor),2)
+resbig <- cor.mtest(for_bigmat)
+
+corrplot(bigcormat, method = "circle", p.mat = resbig$p, sig.level = .05, type = 'upper', order = 'AOE',
+         tl.col = "black", tl.srt = 45, insig = 'blank',
+         bg = "black", title= n_matches)
+
+
+
+molten <- melt(for_bigmat)
+colnames(molten) <- c('sample', 'order', 'value')
+ggplot(molten[which(molten$order %in% c('Lepidoptera', 'Diptera', 'Coleoptera')),], aes(x=sample, y = value, colour=order))+ geom_point()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  geom_line()
+
+ggplot(molten, aes(molten$value))+ facet_wrap(~ order, ncol = 3)+
+  geom_histogram()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  
+  
+
 # yhat <- fixed.dum$fitted
 # scatterplot(yhat ~ degree_df$Site | degree_df$Species,  xlab ="Site", ylab ="yhat", boxplots = FALSE,smooth = FALSE)
 # abline(lm(dataPanel101$y~dataPanel101$x1),lwd=3, col="red")
 
 
 #These aren't working
-fixed <- plm(degree ~ Site, data=degree_df[,seq(1,3)], model="within")
+fixed <- plm(degree ~ Site + Species, data=degree_df, model="within")
 summary(fixed)
 
 
