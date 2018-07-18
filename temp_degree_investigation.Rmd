@@ -1,0 +1,214 @@
+---
+title: "Taxonomic occurrence in bat diet"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo = FALSE, warnings= FALSE}
+library(here)
+library(ggridges)
+library(reshape2)
+library(corrplot)
+
+taxa_mat<- read.csv('shiny/order_composition/order_mat.csv', row.names = 1) 
+
+
+n_matches <- 0
+for_bigmat <- t(taxa_mat[,which(colSums(taxa_mat)>n_matches)])
+if(0 %in% colSums(for_bigmat)){
+  for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)==0)]
+}
+
+big_cor <- for_bigmat
+bigcormat <- round(cor(big_cor),2)
+resbig <- cor.mtest(for_bigmat)
+
+molten <- melt(for_bigmat)
+colnames(molten) <- c('sample', 'order', 'value')
+```
+
+As our histograms of degree seem to have a bimodal distribution, I want to see how taxonomic composition may effect this when we have such generalist bats. Are the generalists consuming a particularly speciose order, thus giving them a higher degree? Here we have information on the taxonomic identity of the MOTUs which passed our quality-control to be assigned to order-level.
+<br/><br/>
+
+![](plots/degree_ridges.jpg)
+<br/><br/><br/><br/><br/><br/>
+When we reduce the samples down to only look at individuals that had over a certain threshold of matched MOTU in their diet (about 12 or so), Lepidoptera and Coleoptera are significantly negatively correlated with Diptera. But this finding frequently changes depending on which threshold of sample exclusion we use
+
+
+```{r, echo = FALSE}
+library(here)
+library(shiny)
+library(reshape2)
+library(corrplot)
+
+setwd(here())
+taxa_mat<- read.csv('shiny/order_composition/order_mat.csv', row.names = 1) 
+
+
+
+# Define UI for miles per gallon app ----
+ui <- fluidPage(
+  
+  # App title ----
+  headerPanel("Minimum number of assigned MOTU per bat (across species)"),
+  
+  # Sidebar panel for inputs ----
+  sidebarPanel(
+    # Input: Selector for variable to plot against mpg ----
+    sliderInput("min_nodes", "Minimum number of MOTU consumed:",
+                min = 0, max = 27,
+                value = 1)
+    
+  ),
+  
+  # Main panel for displaying outputs ----
+  mainPanel("",
+            fluidRow(plotOutput("corr")
+              #splitLayout(cellWidths = c("60%", "40%"), plotOutput("corr"), plotOutput("bars"))
+            )
+    
+    
+    #a <- renderPrint({cat('the maximum number of samples available for each network is', max_samples)}),
+    #a()
+    
+    
+    
+  ) 
+)
+
+
+
+# Define server logic to plot various variables against mpg ----
+server <- function(input, output) {
+  
+  output$caption <- renderText({
+    paste("Minimum of", input$min_nodes, 'nodes', sep =' ')
+  })
+  
+  dat <- reactive({
+    min <- as.numeric(input$min_nodes)
+    
+    print(input)
+    
+    for_bigmat <- t(taxa_mat[,which(colSums(taxa_mat)>min)])
+    if(0 %in% colSums(for_bigmat)){
+      for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)==0)]
+    }
+    
+    big_cor <- for_bigmat
+    bigcormat <- round(cor(big_cor),2)
+    resbig <- cor.mtest(for_bigmat) 
+    
+    molten <- melt(for_bigmat)
+    colnames(molten) <- c('sample', 'order', 'value')
+    print(bigcormat)
+    
+  })
+  
+  
+  
+  mel <- reactive({
+    min <- as.numeric(input$min_nodes)
+    
+    print(input)
+    
+    for_bigmat <- t(taxa_mat[,which(colSums(taxa_mat)>min)])
+    if(0 %in% colSums(for_bigmat)){
+      for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)==0)]
+    }
+    
+    
+    molten <- melt(for_bigmat)
+    colnames(molten) <- c('sample', 'order', 'value')
+    
+    molten[which(molten$order %in% c('Lepidoptera', 'Diptera', 'Coleoptera')),]
+    
+  })
+  
+  
+  output$corr <- renderPlot(corrplot(dat(), method = "circle", p.mat = resbig$p, sig.level = .05, type = 'upper', order = 'AOE',
+                                     tl.col = "black", tl.srt = 45, insig = 'blank',
+                                     bg = "black"))
+  
+  output$dots <- renderPlot(ggplot(mel(), aes(x=sample, y = value, colour=order))+ geom_point(alpha= 0.7)+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+      geom_line()+labs(y='N MOTU'))
+  
+  output$bars <- renderPlot(ggplot(mel()) + geom_bar(aes(y = value, x = sample, fill = order), data = molten[which(molten$order %in% c('Lepidoptera', 'Diptera', 'Coleoptera')),],
+                      stat="identity")+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+    )
+  
+  
+  
+}
+
+shinyApp(ui, server)
+
+
+```
+
+
+<br/><br/><br/><br/>
+
+
+Lepidoptera are the commonest MOTU per-bat. Here we see (awful) stacked barplots showing the number of MOTU attributed to each order per bat. <br/><br/>
+```{r echo = FALSE}
+
+ggplot() + geom_bar(aes(x = value, y = sample, fill = order), data = molten[which(molten$order %in% c('Lepidoptera', 'Diptera', 'Coleoptera')),],
+                    stat="identity")+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+```
+<br/><br/><br/><br/>
+
+
+```{r echo = FALSE}
+
+ggplot(molten[-which(molten$value<3),], aes(x = sample, fill = order, y = value)) + geom_bar(stat = 'identity')+ coord_flip()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x=NULL)
+
+```
+
+
+```{r, echo = F, warning = F, fig.height = 35, fig.width = 6, fig.align = "center"}
+ggplot(data = molten[-which(molten$value<3),], aes(x = order, y =sample)) + geom_point(aes(size=value))+
+  theme(panel.background=element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+This histogram of the number of incidences of a given order per-bat shows that the Lepidoptera, Diptera and Coleoptera are the orders that most often show up multiple times per bat
+```{r, echo = FALSE, warning=FALSE}
+
+ggplot(molten, aes(molten$value))+ facet_wrap(~ order, ncol = 3)+
+  geom_histogram()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+
+
+```
+
+<br/><br/>
+This boxplot shows the same data, also indicates this
+```{r echo=FALSE}
+ggplot(molten, aes(x=order, y=value))+ geom_boxplot()+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+<br/><br/><br/><br/><br/>
+
+
+Most bats consume a low number of matched MOTU
+```{r, echo =FALSE}
+hist(rowSums(big_cor), xlab="Number of MOTU consumed",
+     main='Histogram of number of matched MOTU consumed per bat')
+```
+
