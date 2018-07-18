@@ -18,6 +18,8 @@ if(interactive()==TRUE){
   library(netReducer, lib.loc = '/data/home/btw863/r_packages/')
   library(reshape2, lib.loc = '/data/home/btw863/r_packages/')
   library(ggplot2, lib.loc = '/data/home/btw863/r_packages/')
+  library(labeling, lib.loc = '/data/home/btw863/r_packages/')
+  library(digest, lib.loc = '/data/home/btw863/r_packages/')
 }
 
 setwd(here())
@@ -174,6 +176,7 @@ summary(multiple_reg_no_div)
 
 sink()
 
+print('completed lms')
 #####Plotting ####
 
 palette <- c("#75aa56",
