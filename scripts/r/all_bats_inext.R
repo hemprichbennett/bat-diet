@@ -206,7 +206,7 @@ nofacet <- ggplot(na.omit(z), aes_string(x="x", y="y", color = 'site')) +
   geom_point(size=3, data=data.sub)+
   ylab('OTU diversity') + xlab('Number of bats sampled')+
   geom_line(aes_string(linetype="lty"), lwd=0.5)+
-  scale_color_discrete()+
+  scale_color_manual(values = c("black", "blue", "pink"))+
   theme(legend.position = "bottom", 
         legend.title=element_blank(),
         text=element_text(size=18),
@@ -220,5 +220,10 @@ geom_ribbon(aes_string(ymin="y.lwr", ymax="y.upr"), alpha=0.2)+
 nofacet
 
 pdf('plots/inext/all_bats_motu_inext_nofacet.pdf')
+nofacet
+dev.off()
+
+
+pdf('plots/inext/all_bats_motu_inext_nofacet_wide.pdf', width = 12)
 nofacet
 dev.off()
