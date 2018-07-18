@@ -7,7 +7,7 @@
 #$ -l h_rt=100:0:0     # Request runtime (up to 240 hours)
 #$ -l h_vmem=5G     # Request RAM per core
 #$ -m bea     # Status emails
-#$ -t 1-11
+#$ -t 1-14
 
 
 module load R
