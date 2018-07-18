@@ -190,7 +190,7 @@
            'niche overlap',
            'nestedness',
            'discrepancy',
-           'ISA')
+           'ISA', 'weighted nestedness', 'NODF', 'weighted NODF')
   
   
   
