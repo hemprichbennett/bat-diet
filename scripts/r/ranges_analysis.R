@@ -84,7 +84,7 @@ for(i in 1: length(unique(ranges_df$metric))){
              panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
    labs(x = 'Clustering', y = firstup(as.character(met)))
  
-  leg <- g_legend(ggplot(ranges_df[which(ranges_df$metric==met),], aes(clustering, actual, colour = network))+
+  leg <- g_legend(ggplot(ranges_df[which(ranges_df$metric==met & ranges_df$signif=='significant'),], aes(clustering, actual, colour = network))+
                     geom_point()+
                     geom_errorbar(aes(ymin=lower, ymax=upper, colour = network), width=.1, alpha = 0.5)+
                     scale_fill_manual(values=cbPalette)+
@@ -104,7 +104,35 @@ ggplot(ranges_df[which(ranges_df$metric==met & ranges_df$signif=='significant'),
   scale_fill_manual(values=cbPalette)+
   scale_colour_manual(values=cbPalette)+
   theme_bw()+
-  theme(legend.position="none")+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   labs(x = 'Clustering', y = firstup(as.character(met)))
+
+
+
+
+all <- ggplot(ranges_df, aes(clustering, actual, colour = network))+
+  geom_point()+
+  geom_errorbar(aes(ymin=lower, ymax=upper, colour = network), width=.1, alpha = 0.5)+
+  scale_fill_manual(values=cbPalette)+
+  scale_colour_manual(values=cbPalette)+
+  theme_bw()+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x = 'Clustering', y = 'Measured value, random values')+
+  facet_wrap(~ metric, nrow = 1, scales = 'free_y')+
+  theme(legend.position="none")
+  
+
+all_only_sig <- ggplot(ranges_df[which(ranges_df$signif=='significant'),], aes(clustering, actual, colour = network))+
+  geom_point()+
+  scale_fill_manual(values=cbPalette)+
+  scale_colour_manual(values=cbPalette)+
+  theme_bw()+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  labs(x = 'Clustering threshold', y = 'Measured value')+
+  facet_wrap(~ metric, nrow = 1, scales = 'free_y')+
+  theme(legend.position="none")
+
+grid.arrange(all, all_only_sig, leg, nrow = 3)
