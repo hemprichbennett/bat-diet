@@ -1,0 +1,12 @@
+name: temp_degree_investigation
+title: temp_degree_investigation
+username:
+account: hemprichbennett
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 368512
+bundleId: 1452529
+url: https://hemprichbennett.shinyapps.io/temp_degree_investigation/
+when: 1530110598.77869
+asMultiple: FALSE
+asStatic: FALSE
