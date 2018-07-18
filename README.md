@@ -7,3 +7,6 @@ betalink analysis of beta-diversity uses the script 'scripts/r/betalink_analysis
 iNEXT analysis of the data uses the script 'scripts/r/all_bats_inext.R'
 
 For the OTU analysis data was first generated using the script 'scripts/r/otu_conclusion_check_generation.R', then analysed with 'scripts/r/otu_conclusion_check_output_use.R'
+
+
+The important rarefaction analysis using LOTUS is done using the script array_site_motu95_confidence_intervals.R, initiated on apocrita using in_site_otu_95.sh. The output is then visualised locally using ranges_analysis.R
