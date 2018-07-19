@@ -28,7 +28,7 @@ setwd(here())
 source('scripts/r/r_network_gen.r')
 
 
-nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F, split_by = 'site and year')
+nets <- r_network_gen(collapse_species = T, filter_species = T, lulu = T, include_malua = F, split_by = 'site')
 names(nets) <- gsub('DANUM', 'Danum', names(nets))
 names(nets) <- gsub('MALIAU', 'Maliau', names(nets))
 
@@ -43,10 +43,8 @@ temp <- beta
 colnames(temp)[c(1,2)] <- c('j', 'i')
 for_plot <- rbind(beta, temp)
 #Order the factors so that the plot looks nice
-for_plot$i <- ordered(for_plot$i, levels = c("Danum, 2016", "Danum, 2017", "Maliau, 2016", 'Maliau, 2017',
-                                             'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017'))
-for_plot$j <- ordered(for_plot$j, levels = c("Danum, 2016", "Danum, 2017", "Maliau, 2016", 'Maliau, 2017',
-                                             'SAFE, 2015', 'SAFE, 2016', 'SAFE, 2017'))
+for_plot$i <- ordered(for_plot$i, levels = c("Danum", "Maliau", 'SAFE'))
+for_plot$j <- ordered(for_plot$j, levels = c("Danum", "Maliau", 'SAFE'))
 for_plot$STWN <- for_plot$ST/for_plot$WN
 melted_forplot <- melt(for_plot)
 
@@ -72,6 +70,8 @@ species_diss <- ggplot(for_plot, aes(i, fct_rev(j)))+ geom_point(aes(size=S))+
   labs(x= NULL, y = NULL)
 
 betaplot  
+
+
 
 ## @knitr betalink_extras
 
