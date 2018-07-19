@@ -183,14 +183,15 @@ names(netlists) <- names(rawnets)
 #Specify which index(s) to use
 
 ind <- c('functional complementarity',
-                          'web asymmetry',
-                          'Alatalo interaction evenness',
-                          'togetherness',
-                          'Fisher alpha', 'mean number of shared partners',
-                          'niche overlap',
-                          'nestedness',
-                          'discrepancy',
-                          'ISA', 'modularity')
+         'web asymmetry',
+         'Alatalo interaction evenness',
+         'togetherness',
+         'Fisher alpha', 'mean number of shared partners',
+         'niche overlap',
+         'nestedness',
+         'discrepancy',
+         'ISA', 'weighted nestedness', 'NODF', 'weighted NODF', 'modularity')
+
 
 
 
