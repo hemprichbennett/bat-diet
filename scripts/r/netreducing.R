@@ -125,7 +125,7 @@ ind <- c('functional complementarity',
          'niche overlap',
          'nestedness',
          'discrepancy',
-         'ISA', 'modularity')
+         'ISA', 'weighted nestedness', 'NODF', 'weighted NODF', 'modularity')
 
 chosen_ind <- ind[args]
 
