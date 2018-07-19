@@ -10,3 +10,7 @@ For the OTU analysis data was first generated using the script 'scripts/r/otu_co
 
 
 The important rarefaction analysis using LOTUS is done using the script array_site_motu95_confidence_intervals.R, initiated on apocrita using in_site_otu_95.sh. The output is then visualised locally using ranges_analysis.R
+
+Degree analysis took place using all_species_sitewise_individual_analysis.R, plotting the degree of each bat and using a fixed effects model to look at how each site/habitat type/species varied.
+
+netreducing occurs using the script 'netreducing.R', initiated on apocrita with the script 'in_a_netreducing.sh'
