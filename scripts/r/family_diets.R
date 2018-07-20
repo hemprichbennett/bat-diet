@@ -79,7 +79,8 @@ for(i in 1:length(non_gc)){
   all_interactions[1,non_gc[i]] <- str_split(all_interactions[1,non_gc[i]], pattern = '\\.')[[1]][1]
 }
 
-badcols <- c('1774','4437', '2070', '2275', '4260', '4531', "1004", "1007", "1107", "1134", "1165", "1180",  "198",  "209",  "210","387",  "426",  "459",  "497",  "536",  "541",  "567",  "591",  "689","796",  "806",  "822",  "841",  "843",  "899",  "910",  "918",  "986","996", "3712", "4341", "4361",'1774','4437', '2070', '2275', '4260', '4531', '841', '843')#Sadly these columns match two different samples, so must be removed for now until checked against the field data
+badcols <- c('1774','4437', '2070', '2275', '4260', '4531', "1004", "1007", "1107", "1134", "1165", "1180",  "198",  "209",  "210","387",  "426",  "459",  "497",  "536",  "541",  "567",  "591",
+             "689","796",  "806",  "822",  "841",  "843",  "899",  "910",  "918",  "986","996", "3712", "4341", "4361",'1774','4437', '2070', '2275', '4260', '4531', '841', '843')#Sadly these columns match two different samples, so must be removed for now until checked against the field data
 
 all_interactions <- all_interactions[,-which(all_interactions[1,] %in% badcols)]
 
@@ -197,12 +198,13 @@ longtiles
 dev.off()
 
 
-widetiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = Family, y = fct_rev(for_x))) + geom_tile(aes(fill=prop), colour = 'white')+
+widetiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = Family, y = fct_rev(for_x))) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient2(low = "white", mid = "blue",
                        high = "black", midpoint = 0.5, name ='Proportion of\nsamples\ncontaining', limits = c(0,1)) +
   labs(y ="Bat species", x = 'Prey')+
   theme_linedraw()+
-  theme(panel.grid.major = element_blank(), axis.text.x = element_text(angle = 90, hjust = 1),
+  theme(panel.grid.major = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5),
         strip.text.x = element_text(colour = 'white', size = 8, angle = 90), strip.placement = "outside",
         panel.background = element_rect(fill = "darkgray",
                                         colour = "darkgray",
@@ -218,10 +220,9 @@ dev.off()
 
 
 balloons <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = Family, y =fct_rev(for_x))) + geom_point(aes(size=prop))+ 
-  theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
   labs(y ="Bat species", x = 'Prey', size = 'Proportion of\nsamples\ncontaining')+
   theme_linedraw()+
-  theme(panel.grid.major = element_blank(), axis.text.x = element_text(angle = 90, hjust = 1),
+  theme(panel.grid.major = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5),
         strip.text.x = element_text(colour = 'white', size = 8, angle = 90), strip.placement = "outside",
         strip.background =element_rect(fill="black", size = 3))+
   facet_grid(. ~order, scales = 'free', space="free", switch = 'both')#+
