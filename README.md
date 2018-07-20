@@ -14,3 +14,5 @@ The important rarefaction analysis using LOTUS is done using the script array_si
 Degree analysis took place using all_species_sitewise_individual_analysis.R, plotting the degree of each bat and using a fixed effects model to look at how each site/habitat type/species varied.
 
 netreducing occurs using the script 'netreducing.R', initiated on apocrita with the script 'in_a_netreducing.sh'
+
+family_diets.R makes the family-level diet plots for each bat species
