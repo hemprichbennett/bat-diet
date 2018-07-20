@@ -190,7 +190,7 @@
            'niche overlap',
            'nestedness',
            'discrepancy',
-           'ISA', 'weighted nestedness', 'NODF', 'weighted NODF')
+           'ISA', 'weighted nestedness', 'NODF', 'weighted NODF', 'modularity')
   
   
   
@@ -199,7 +199,7 @@
   m <- metcalcs(networks= netlists, indices = ind, network_level = 'higher')
   
   write.csv(m, 'data/output_data/all_bats/sitewise_otu_conclusions.csv')
-  
+  m <- read.csv('data/output_data/all_bats/sitewise_otu_conclusions.csv')
   
   firstup <- function(x) {
     substr(x, 1, 1) <- toupper(substr(x, 1, 1))
@@ -216,6 +216,7 @@
   m$habitat_type <- as.factor(ifelse(m$site == 'SAFE', 'Logged', 'Primary'))
   m$metric <- gsub(' ', '\n', m$metric)
   m$metric <- gsub('\\.', '\n', m$metric)
+  m$metric <- gsub('\nHL', '', m$metric)
   
   
   sitescatter <- ggplot(m , aes(x = clustering, y = value, color = site)) +
@@ -248,4 +249,19 @@
   jpeg('plots/sitewise_lineplot.jpg', width = 7, height = 7, units = 'in', res = 300)
   line_plot(input = m, metric = 'metric', network = 'network', clustering = 'clustering', value = 'value')  
   dev.off()
+  
+  pdf('plots/sitewise_lineplot.pdf')
+  line_plot(input = m, metric = 'metric', network = 'network', clustering = 'clustering', value = 'value')  
+  dev.off()
+  
+  
+  ggplot(m[m$metric=='NODF',] , aes(x = clustering, y = value, color = network)) +
+    geom_point()+
+    labs(x = 'Clustering (%)', y = NULL) +
+    geom_smooth(method = lm, se = T)+
+    scale_x_continuous(breaks = seq(91, 98, 1))+
+    scale_color_brewer(type = 'qual')+
+    theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))+#strip stuff sorts the facet labels, spacing adjusts the space between facets
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_line(colour = "black"))
   
