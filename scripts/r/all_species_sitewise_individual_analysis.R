@@ -174,16 +174,16 @@ prop_present$nbats <- as.integer(as.character(prop_present$nbats))
 
 prop_present$Site <- gsub('DANUM', 'Danum', prop_present$Site)
 prop_present$Site <- gsub('MALIAU', 'Maliau', prop_present$Site)
-prop_present$Species <- gsub('Hice', 'Hipposideros cervinus', prop_present$Species)
-prop_present$Species <- gsub('Hiri', 'Hipposideros ridleyi', prop_present$Species)
-prop_present$Species <- gsub('Hidi', 'Hipposideros diadema', prop_present$Species)
-prop_present$Species <- gsub('Hidy', 'Hipposideros dyacorum', prop_present$Species)
-prop_present$Species <- gsub('Kein', 'Kerivoula intermedia', prop_present$Species)
-prop_present$Species <- gsub('Keha', 'Kerivoula hardwickii', prop_present$Species)
-prop_present$Species <- gsub('Kepa', 'Kerivoula papillosa', prop_present$Species)
-prop_present$Species <- gsub('Rhbo', 'Rhinolophus borneensis', prop_present$Species)
-prop_present$Species <- gsub('Rhse', 'Rhinolophus sedulus', prop_present$Species)
-prop_present$Species <- gsub('Rhtr', 'Rhinolophus trifoliatus', prop_present$Species)
+prop_present$Species <- gsub('Hice', 'Hipposideros\ncervinus', prop_present$Species)
+prop_present$Species <- gsub('Hiri', 'Hipposideros\nridleyi', prop_present$Species)
+prop_present$Species <- gsub('Hidi', 'Hipposideros\ndiadema', prop_present$Species)
+prop_present$Species <- gsub('Hidy', 'Hipposideros\ndyacorum', prop_present$Species)
+prop_present$Species <- gsub('Kein', 'Kerivoula\nintermedia', prop_present$Species)
+prop_present$Species <- gsub('Keha', 'Kerivoula\nhardwickii', prop_present$Species)
+prop_present$Species <- gsub('Kepa', 'Kerivoula\npapillosa', prop_present$Species)
+prop_present$Species <- gsub('Rhbo', 'Rhinolophus\nborneensis', prop_present$Species)
+prop_present$Species <- gsub('Rhse', 'Rhinolophus\nsedulus', prop_present$Species)
+prop_present$Species <- gsub('Rhtr', 'Rhinolophus\ntrifoliatus', prop_present$Species)
 
 
 balloons <- ggplot(data = prop_present[which(prop_present$nbats >9),], aes(y = fct_rev(Order), x =Site)) + geom_point(aes(size=prop, colour = prop))+ 
@@ -204,7 +204,7 @@ tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_
   theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
 
-pdf('plots/sitewise_proportion_of_bats_containing.pdf')    
+pdf('plots/sitewise_proportion_of_bats_containing.pdf', height = 9)    
 tiles
 dev.off()
 
@@ -310,6 +310,18 @@ summary(fixed_hab)
 
 anova(fixed.dum, fixed_hab)
 
+#Isolate and work with the coefficients from the best model
+f_h <- summary(fixed_hab)
+f_h <- f_h$coefficients
+rownames(f_h) %<>%
+  gsub('hab_type', 'Habitat: ', .)%<>%
+  gsub('factor\\(Species\\)', 'Species: ', .)
+
+f_h <- round(f_h, 3)
+
+f_h
+write.csv(f_h, 'results/degree_model_coefficients.csv')
+
 sp_ridge <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
   geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
   theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
@@ -380,20 +392,26 @@ taxa_corr <- corrplot(cormat, method = "circle", p.mat = res1$p, sig.level = .05
 #### manipulate the degree for corplot ####
 
 
-n_matches <- 4
+n_matches <- 5
 for_bigmat <- t(taxa_mat[,which(colSums(taxa_mat)>n_matches)])
-if(0 %in% colSums(for_bigmat)){
-  for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)==0)]
-}
+for_bigmat <- for_bigmat[,-which(colSums(for_bigmat)<=20)]
+
 
 big_cor <- for_bigmat
 bigcormat <- round(cor(big_cor),2)
 resbig <- cor.mtest(for_bigmat)
 
-corrplot(bigcormat, method = "circle", p.mat = resbig$p, sig.level = .05, type = 'upper', order = 'AOE',
-         tl.col = "black", tl.srt = 45, insig = 'blank',
-         bg = "black", title= n_matches)
 
+
+pdf('plots/order_correlations.pdf')
+
+corrplot(bigcormat, method = "circle", p.mat = res1$p, sig.level = .05, type = 'upper', order = 'AOE',
+                      tl.col = "black", tl.srt = 45, insig = 'blank', col = c('black', 'white'),
+                      bg = "lightblue",
+                      cl.pos = "b")
+
+
+dev.off()
 
 
 molten <- melt(for_bigmat)
