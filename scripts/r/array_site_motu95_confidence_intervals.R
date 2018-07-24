@@ -125,11 +125,11 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
         for(i in 1:ncol(all_interactions)){
           if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no1){
             row <- field_data[which(field_data$Faeces_no1==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            site <- row$Site
             all_interactions[1,i] <- as.character(site)
           }else if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no2){
             row <- field_data[which(field_data$Faeces_no2==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            site <- row$Site
             all_interactions[1,i] <- as.character(site)
           }
         }
@@ -138,14 +138,14 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
         for(i in 1:ncol(all_interactions)){
           if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no1){
             row <- field_data[which(field_data$Faeces_no1==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            site <- row$Site
             all_interactions[1,i] <- as.character(site)
             if(!row$Species %in% desired_colnames){
               badcols <- c(badcols,i)
             }
           }else if(as.character(all_interactions[1,i]) %in% field_data$Faeces_no2){
             row <- field_data[which(field_data$Faeces_no2==as.character(all_interactions[1,i])),]
-            site <- row$SiteAndYear
+            site <- row$Site
             all_interactions[1,i] <- as.character(site)
             if(!row$Species %in% desired_colnames){
               badcols <- c(badcols,i)
@@ -168,7 +168,7 @@ r_network_gen <- function(input_network, collapse_species = T, desired_species =
       return(all_interactions)
     }else{
       all_interactions_with_extra <- rbind(all_interactions[1,], all_interactions)
-      all_interactions_with_extra <- the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2',species.column = "SiteAndYear", split.by.column = "Species", split.by.var = desired_species, OTU.matrix = all_interactions_with_extra, collapse_top_species = F)
+      all_interactions_with_extra <- the.matrix.reloader(master.data = field_data, ID.column.1 = "Faeces_no1", ID.column.2 = 'Faeces_no2',species.column = "Site", split.by.column = "Species", split.by.var = desired_species, OTU.matrix = all_interactions_with_extra, collapse_top_species = F)
       return(all_interactions_with_extra)
     }
 
