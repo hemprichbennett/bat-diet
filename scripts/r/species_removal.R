@@ -125,6 +125,13 @@ master_df$minus_species <- as.factor(master_df$minus_species)
 
 master_df$minus_species <- relevel(master_df$minus_species, "No species removed")#Makes 'none' the first factor level
 
+master_df$Metric %<>% 
+  gsub('ISA', 'Interaction\nstrength\nasymmetry', .)%<>%
+  gsub('Mean number of shared partners', 'Mean number\nof shared\npartners', .)%<>%
+  gsub('Weighted nestedness', 'Weighted\nnestedness', .)%<>%
+  gsub('Functional complementarity', 'Functional\ncomplementarity', .)#%<>%
+
+
 #master_df$Metric <- gsub(' ', '\n', master_df$Metric)
 
 sp_plot <- ggplot(master_df, aes(x=minus_species, y = value, colour = Network))+
@@ -132,7 +139,7 @@ sp_plot <- ggplot(master_df, aes(x=minus_species, y = value, colour = Network))+
   facet_wrap( ~ Metric, scales = 'free')+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
                      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))+
-  labs(x =NULL, y = NULL)
+  labs(x ='Species removed', y = 'Metric value')
 sp_plot
 
 ## @knitr species_removal_plot_saving

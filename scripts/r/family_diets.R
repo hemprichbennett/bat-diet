@@ -232,3 +232,39 @@ balloons
 pdf('plots/familyplots/balloon_wide_family.pdf', width = 16)
 balloons
 dev.off()
+
+
+#Try to make something with trophic roles, mostly considering larval ones as this is the longest and most prominent stage. Mosquitoes and midges have been classed as pollinators
+prop_present$role <- NA
+
+prop_present$role[prop_present$Family %in% c('Eupodidae')] <- 'Ectoparasites'
+prop_present$role[prop_present$Family %in% c('Tarsonemidae', 'Cecidomyiidae', 'Chrysomelidae', 'Cicadidae', 'Cerambycidae', 'Tettigoniidae', 'Caeciliusidae',
+                                             'Geometridae', 'Cicadellidae', 'Acrididae', 'Pentatomidae', 'Sciaridae', 'Lymantriidae', 'Mycetophilidae',
+                                             'Curculionidae', 'Tortricidae', 'Tortricidae', 'Derbidae', 'Aphididae', 'Tarsonemidae', 
+                                             'Noctuidae', 'Miridae', 'Tabanidae', 'Sphingidae', 'Crambidae')] <- 'Herbivores' #Tettigoniidae are MOSTLY herbivores... Lymantriidae are herbivores as larvae, don't feed as adults
+prop_present$role[prop_present$Family %in% c('Culicidae', 'Chironomidae', 'Psychodidae', 'Ceratopogonidae', 'Mutillidae')] <- 'Pollinators' #Ceratopogonidae are midges which are sometimes biting, sometimes not
+prop_present$role[prop_present$Family %in% c('Ectobiidae', 'Blaberidae', 'Gryllidae', 'Blattidae')] <- 'Omnivores'
+prop_present$role[prop_present$Family %in% c('Termitidae', 'Elateridae', 'Calliphoridae', 'Entomobryidae')] <- 'Detritivores'
+prop_present$role[prop_present$Family %in% c('Ichneumonidae', 'Tachinidae', 'Phoridae')] <- 'Parasitoids'
+prop_present$role[prop_present$Family %in% c('Sparassidae', 'Mantidae', 'Carabidae', 'Salticidae', 'Araneidae', 'Theridiidae')] <- 'Carnivores'
+prop_present$role[prop_present$Family %in% c('Muscidae', 'Chloropidae', 'Stratiomyidae', 'Lycaenidae', 'Ptilodactylidae')] <- 'Didn`t attempt'
+
+
+
+ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = Family, y = fct_rev(for_x))) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
+scale_fill_gradient2(low = "white", mid = "blue",
+high = "black", midpoint = 0.5, name ='Proportion of\nsamples\ncontaining', limits = c(0,1)) +
+labs(y ="Bat species", x = 'Prey')+
+theme_linedraw()+
+theme(panel.grid.major = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5),
+strip.text.x = element_text(colour = 'white', size = 8, angle = 90), strip.placement = "outside",
+panel.background = element_rect(fill = "darkgray",
+colour = "darkgray",
+size = 0.5, linetype = NULL),
+strip.background =element_rect(fill="black", size = 3))+
+facet_grid(. ~order, scales = 'free', space="free", switch = 'both')#+
+
+widetiles
+
+
