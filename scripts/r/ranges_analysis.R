@@ -147,15 +147,15 @@ for_sig_only_vals$upper <- NA
 for_sig_only_vals$signif <- 'Only significant values'
 
 for_facets <- ranges_df
-for_facets$signif <- 'All values'
+for_facets$signif <- 'Observed and expected values'
 
 
 for_facets <- rbind(for_facets, for_sig_only_vals)
 for_facets$metric <- firstup(for_facets$metric)
 
 #Remove metrics which are uninteresting #
-
-for_facets <- for_facets[-which(for_facets$metric %in% c('Alatalo\ninteraction\nevenness','Togetherness', 'Niche\noverlap', 'Web\nasymmetry')),]
+unique(for_facets$metric)
+for_facets <- for_facets[-which(for_facets$metric %in% c('Alatalo\ninteraction\nevenness', 'Web\nasymmetry', "Fisher\nalpha", "Interaction\nstrength\nasymmetry")),]
 
 
 #plot
@@ -168,7 +168,7 @@ metrics_facet <- ggplot(for_facets, aes(y =clustering, x=actual, colour = networ
   theme_dark()+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(y = 'Clustering %', x = 'Measured value, random values')
+  labs(y = 'Clustering %', x = 'Metric value')
 metrics_facet
 
 pdf('plots/randomized_ranges/all_facet.pdf', width = 14)
