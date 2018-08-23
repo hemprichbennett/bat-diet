@@ -14,4 +14,5 @@ module load R/3.4.3
 
 
 
-Rscript /data/scratch/btw863/bat-diet/scripts/r/array_site_motu95_confidence_intervals.R ${SGE_TASK_ID}
+Rscript /data/scratch/btw863/bat-diet/scripts/r/small_array_site_motu95_confidence_intervals.R ${SGE_TASK_ID}
+#Made a newer, smaller script (does 50 iterations, not 100) as 100 was timing out for some metrics

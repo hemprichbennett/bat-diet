@@ -30,7 +30,6 @@ for(n in 1:length(nets)){
   molten_net_2 <- molten_net[(which(molten_net[,3] != 0)),]
   bat_igraph <- graph.data.frame(molten_net_2, directed = F)
   V(bat_igraph)$type <- V(bat_igraph)$name %in% molten_net_2[,1]
-  
   igraph_list[[n]] <- bat_igraph
   
   #Make colours vector
@@ -39,9 +38,12 @@ for(n in 1:length(nets)){
     if(length(grep('denovo',V(bat_igraph)[[i]]$name))>0){ #If the node is an OTU
       node_cul[i] <- "#01c2cd"
     }
+    
   }
+  
+  V(bat_igraph)$name <- gsub('denovo.+', '', V(bat_igraph)$name)
   pdf(paste('plots/Site comparisons/', names(nets)[n], '.pdf', sep =''))
-  plot(bat_igraph, vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[n])
+  plot(bat_igraph, vertex.size = 10, vertex.color=node_cul, main = names(nets)[n])
   dev.off()
 }
 
