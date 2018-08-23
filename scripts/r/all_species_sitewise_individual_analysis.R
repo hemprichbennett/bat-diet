@@ -149,9 +149,9 @@ all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
 
 #Look at the occurence of taxa in each species
 
-tax_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
-tax_df <- melt(tax_df, id.vars = c('Sample', 'Species', 'Site'))
-colnames(tax_df)[c(4,5)] <- c('Order', 'Present/absent')
+tax_df <- all_ecology[,c(1, 2, 66, seq(23,47))]
+tax_df <- melt(tax_df, id.vars = c('Sample', 'Species', 'Site.x'))
+colnames(tax_df)[c(3:5)] <- c('Site', 'Order', 'Present/absent')
 #tax_df$`Present/absent` <- as.integer(tax_df$`Present/absent`)
 tax_df$`Present/absent` <- ifelse(tax_df$`Present/absent`== 0, 0, 1)
 
@@ -196,10 +196,10 @@ balloons
 
 tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_rev(Order), x =Site)) + geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient(low = "white",
-                      high = "black", name = 'Proportion') + # #3e0e4c works well
-  labs(fill='Proportion of MOTU present',
-       x ="Site", y = 'Prey taxa')+
+                      high = "black", name = 'Proportion\nof bats\nconsuming') +
+  labs(x ="Site", y = 'Prey taxa')+
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(strip.text.x = element_text(size = 12))+
   facet_wrap(~Species)+
   theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
@@ -340,7 +340,7 @@ sp_ridge <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Si
 
 sp_ridge
 
-pdf('plots/degree_ridges.pdf', width = 10)
+pdf('plots/degree_ridges.pdf', width = 12)
 sp_ridge
 dev.off()
 
