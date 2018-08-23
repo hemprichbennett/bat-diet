@@ -51,7 +51,7 @@ all_interactions <- all_interactions[,-which(!all_interactions[1,] %in% desired_
 
 colnames(all_interactions) <- all_interactions[2,]
 all_interactions <- all_interactions[-c(2),]
-rownames(all_interactions) <- all_interactions[,1]
+#rownames(all_interactions) <- all_interactions[,1]
 all_interactions <- all_interactions[,-1]
 
 locations <- c()
@@ -116,7 +116,6 @@ cat(args, '\n')
 
 args <- as.numeric(args)
 
-#args <- 1
 ind <- c('functional complementarity',
          'web asymmetry',
          'Alatalo interaction evenness',
@@ -147,37 +146,14 @@ out_df$netnames <- gsub('MALIAU', 'Maliau', out_df$netnames)
 
 write.csv(out_df, paste('results/rarifying_networks/reducing_', chosen_ind,'_100.csv', sep =''))
 
-bigtax <- dcast(out_df[which(out_df$included==T),], n_used + netnames + metricval + metricused ~ Species)
+out_df <- out_df[out_df$included==T,]
 
-longtax <- melt(bigtax, id.vars = c('netnames', 'n_used', 'metricused', 'metricval'))
+bigtax <- dcast(out_df[,c(1,5,6,7,8)], n_used + iteration +  netnames + metricval ~ Species, fun.aggregate = length, value.var = 'Species')
+
+longtax <- melt(bigtax, id.vars = c('netnames', 'n_used', 'metricval'))
 colnames(longtax)[5] <- 'Species'
 bigtax$diversity <- sapply(seq(1,nrow(bigtax)), function(x) vegan::diversity(bigtax[x,seq(5, ncol(bigtax)),]))
 
-#### Stats ####
-
-multiple_reg <- lm(metricval ~ n_used * netnames * diversity + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
-summary(multiple_reg)
-
-
-multiple_reg_no_sp <- lm(metricval ~ n_used * netnames * diversity, data = bigtax)
-summary(multiple_reg_no_sp)
-
-multiple_reg_no_div <- lm(metricval ~ n_used * netnames  + Hice+ Hidi + Hidy+ Hiri+ Keha + Kein+ Kepa+Rhbo+Rhse+ Rhtr, data = bigtax)
-summary(multiple_reg_no_div)
-
-
-
-sink(paste('results/rarifying_networks/', chosen_ind, '_lm.txt', sep = ''))
-summary(multiple_reg)
-
-summary(multiple_reg_no_sp)
-
-summary(multiple_reg_no_div)
-
-sink()
-
-print('completed lms')
-#####Plotting ####
 
 palette <- c("#75aa56",
              "#8259b1",
@@ -205,7 +181,7 @@ pdf(paste('plots/netreducing/rarifying_', chosen_ind, 'n_bats.pdf', sep = ''))
 diversity_scatter
 dev.off()
 
-sp_scatter <- ggplot(longtax, aes(x = value, y = metricval, colour= netnames))+ 
+sp_scatter <- ggplot(longtax, aes(x = metricval, y = metricval, colour= netnames))+ 
   geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
   labs(x='Number of individuals', y= firstup(chosen_ind))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
