@@ -107,7 +107,7 @@ As shown in Figure \ref{fig:sp_removal}, when removing most species there is lit
 
 ![The proportion of bats containing each prey order obtained](plots/sitewise_proportion_of_bats_containing.pdf)
 
-![The proportion of bats containing each prey order obtained]()
+
 ```
 
 #Discussion
