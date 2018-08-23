@@ -9,6 +9,7 @@
 
 library(ggplot2)
 library(magrittr)
+library(forcats)
 
 firstup <- function(x) {
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
@@ -21,21 +22,21 @@ source('scripts/r/r_network_gen.r')
 
 nets <- r_network_gen(lulu=T, filter_species = T)
 
-ind <- c('functional complementarity',
-         'web asymmetry',
-         'Alatalo interaction evenness',
-         'togetherness',
-         'Fisher alpha', 'mean number of shared partners',
-         'niche overlap',
-         'nestedness',
-         'discrepancy',
-         'ISA', 'weighted nestedness', 'NODF', 'weighted NODF')
+# ind <- c('functional complementarity',
+#          'web asymmetry',
+#          'Alatalo interaction evenness',
+#          'togetherness',
+#          'Fisher alpha', 'mean number of shared partners',
+#          'niche overlap',
+#          'nestedness',
+#          'discrepancy',
+#          'ISA', 'weighted nestedness', 'NODF', 'weighted NODF')
 
 ind <- c('functional complementarity',
-         'Fisher alpha', 'mean number of shared partners',
-         'nestedness',
+         'mean number of shared partners',
+         'niche overlap',
          'discrepancy',
-         'ISA', 'weighted nestedness', 'NODF', 'weighted NODF')
+        'NODF')
 
 
 orig <- lapply(ind, function(i) lapply(nets, function(x) bipartite::networklevel(x, index = i, level = 'higher')))
@@ -53,11 +54,13 @@ colnames(mods) <- c('value', 'Network')
 mods$Metric <- 'modularity'
 ind <- c(ind, 'modularity')
 
-orig <- rbind(orig, mods)
+
 
 orig_melted <- melt(orig)
 colnames(orig_melted) <- c('value', 'Network', 'Metric')
-orig_melted$minus_species <- "No species removed"
+
+orig_melted <- rbind(orig_melted, mods)
+#orig_melted$minus_species <- "No species removed"
 
 
 sp_deleter <- function(networks, chosen_index){
@@ -104,11 +107,19 @@ master_df$minus_species <- as.factor(master_df$minus_species)
 
 master_df$Metric <- firstup(master_df$Metric)
 
-palette <- c("#75aa56",
-             "#8259b1",
-             "#be7239")
+#Make a second combined df, by merging the values
 
-master_df$minus_species %<>% 
+orig_melted$net_and_met <- paste(orig_melted$Network, orig_melted$Metric, sep = '_')
+colnames(orig_melted)[1] <- 'actual_value'
+melted_all$network_and_met <- paste(melted_all$Network, melted_all$Metric, sep = '_')
+
+merged <- merge(x= orig_melted[c(1,4)], y = melted_all, by.x = 'net_and_met', by.y = 'network_and_met')
+
+# palette <- c("#75aa56",
+#              "#8259b1",
+#              "#be7239")
+
+merged$minus_species %<>% 
   gsub('Hice', 'Hipposideros cervinus', .)%<>%
   gsub('Hidi', 'Hipposideros diadema', .)%<>%
   gsub('Hidy', 'Hipposideros dyacorum', .)%<>%
@@ -121,30 +132,51 @@ master_df$minus_species %<>%
   gsub('Rhse', 'Rhinolophus sedulus', .)%<>%
   gsub('Rhtr', 'Rhinolophus trifoliatus', .)
 
-master_df$minus_species <- as.factor(master_df$minus_species)
-
-master_df$minus_species <- relevel(master_df$minus_species, "No species removed")#Makes 'none' the first factor level
-
-master_df$Metric %<>% 
-  gsub('ISA', 'Interaction\nstrength\nasymmetry', .)%<>%
-  gsub('Mean number of shared partners', 'Mean number\nof shared\npartners', .)%<>%
-  gsub('Weighted nestedness', 'Weighted\nnestedness', .)%<>%
-  gsub('Functional complementarity', 'Functional\ncomplementarity', .)#%<>%
+merged$Network <- gsub('DANUM', 'Danum', merged$Network)
+merged$Network <- gsub('MALIAU', 'Maliau', merged$Network)
 
 
-#master_df$Metric <- gsub(' ', '\n', master_df$Metric)
+merged$Metric <- firstup(merged$Metric)
 
-sp_plot <- ggplot(master_df, aes(x=minus_species, y = value, colour = Network))+
-  geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
-  facet_wrap( ~ Metric, scales = 'free')+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-                     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))+
-  labs(x ='Species removed', y = 'Metric value')
-sp_plot
 
-## @knitr species_removal_plot_saving
+merged$Metric <- gsub('Mean number of shared partners', 'Mean number of\nshared partners', merged$Metric)
+merged$Metric <- gsub('Functional complementarity', 'Functional\ncomplementarity', merged$Metric)
+merged$minus_species <- as.factor(merged$minus_species)
 
-pdf('plots/species_removal.pdf', height = 11)
-sp_plot
+#Calculate the effect the species is having
+merged$impact <- abs(merged$actual_value - merged$value)
+
+#Now rank the impacts
+merged$rankings <- NA
+
+for(i in 1: length(unique(merged$net_and_met))){
+  n_m <- unique(merged$net_and_met)[i]
+  rows <- which(merged$net_and_met== n_m)
+  rows_to_write <- rows[order(merged[rows,'impact'], decreasing = T)]
+  merged$rankings[rows_to_write] <- seq(1:length(rows_to_write))
+}
+
+
+
+most_inf <- ggplot(merged[merged$rankings<=5,], aes(x= Network, y = fct_rev(minus_species)))+ geom_tile(aes(fill=rankings))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Metric)+
+  scale_fill_gradient(low = 'black', high = 'lightblue', name = 'Influence\nranking')+
+  labs(x = 'Site', y = 'Species')
+most_inf
+
+pdf('plots/species/species_influence_top.pdf')
+most_inf
 dev.off()
 
+
+all_sp <- ggplot(merged, aes(x= Network, y = fct_rev(minus_species)))+ geom_tile(aes(fill=rankings))+
+  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  facet_wrap(~ Metric)+
+  scale_fill_gradient(low = 'black', high = 'lightblue', name = 'Influence\nranking')+
+  labs(x = 'Site', y = 'Species')
+all_sp  
+
+pdf('plots/species/species_influence_all.pdf')
+all_sp
+dev.off()
