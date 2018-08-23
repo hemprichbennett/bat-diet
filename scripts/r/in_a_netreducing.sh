@@ -10,7 +10,7 @@
 #$ -t 1-14
 
 
-module load R
+module load R/3.4.3
 
 
 
