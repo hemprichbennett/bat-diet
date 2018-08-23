@@ -13,6 +13,9 @@ field_df <- read.csv(here('data', 'Edited_all_files_with_lat_long_VKedits.csv'))
 #Remove pregnant or lactating individuals, as they weren't kept
 field_df <- field_df[-which(field_df$Reproductive_condition %in% c('PR', 'P', 'L', 'LA')),]
 
+#get rid of the sites which were never analysed
+field_df <- field_df[-which(field_df$Block %in% c('D', 'DV88', 'DV89', 'E',  'F')),]
+
 #Strip it to the required columns
 field_df <- field_df[,c('Species', "Faeces_no1", "Faeces_no2")]
 field_df$Species <- gsub('Hici', 'Hice', field_df$Species)
