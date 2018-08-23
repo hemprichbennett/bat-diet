@@ -134,7 +134,7 @@ t_taxa_mat <- merge(x=t_taxa_mat, y =field_data, by.x = 'Sample', by.y = 'Faeces
 
 
 
-tax_df <- t_taxa_mat[,c(seq(2,52),70)]
+tax_df <- t_taxa_mat[,c(seq(2,146),164)]
 tax_df <- melt(tax_df, id.vars = c('Species'))
 colnames(tax_df)[c(2,3)] <- c('Family', 'Present/absent')
 tax_df$`Present/absent` <- as.integer(as.character(tax_df$`Present/absent`))
@@ -193,7 +193,7 @@ longtiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(y = f
 
 longtiles
 
-pdf('plots/familyplots/tile_long_family.pdf', height = 10.5)
+pdf('plots/familyplots/tile_long_family.pdf', height = 9)
 longtiles
 dev.off()
 
@@ -214,7 +214,7 @@ widetiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = F
   
 widetiles
 
-pdf('plots/familyplots/tile_wide_family.pdf', width = 16)
+pdf('plots/familyplots/tile_wide_family.pdf', width = 13)
 widetiles
 dev.off()
 
@@ -268,3 +268,47 @@ facet_grid(. ~order, scales = 'free', space="free", switch = 'both')#+
 widetiles
 
 
+
+
+
+MDS_data <- t_taxa_mat[,c(seq(2,52),70)]
+
+#Get rid of the species with too few samples
+smallsp <- names(table(MDS_data$Species)[which(table(MDS_data$Species) < 12)])
+MDS_data <- MDS_data[-which(MDS_data$Species %in% smallsp),]
+
+
+MDS_data[,-ncol(MDS_data)] <- apply(MDS_data[,-ncol(MDS_data)], 2, as.numeric)
+#MDS_data$Species <- as.factor(MDS_data$Species)
+MDS_data <- aggregate(MDS_data[,-ncol(MDS_data)], by=list(Category=MDS_data$Species), FUN=sum)
+
+rownames(MDS_data) <- MDS_data[,1]
+MDS_data <- MDS_data[,-1]                               
+
+diet_MDS <- metaMDS(MDS_data, # Our community-by-species matrix
+                    k=2) # The number of reduced dimensions
+
+
+plot(diet_MDS)
+
+#make a vector of bat echolocation guilds
+echo <- rep('LDC', length(rownames(MDS_data)))
+echo[which(grepl('Hi', rownames(MDS_data)))] <- 'HDC'
+echo[which(grepl('Rh', rownames(MDS_data)))] <- 'HDC'
+#colnames(interactions)[1] <- 'Bat_species'
+#rownames(interactions) <- interactions[,17]
+
+
+plot(diet_MDS, type = 'n')
+ordihull(diet_MDS,groups=echo,draw="polygon",col="grey90",label=F)
+orditorp(diet_MDS,display="sites",
+         air=0.01,cex=1.25)
+
+
+pdf('plots/family_MDS.pdf', width = 10)
+plot(diet_MDS, type = 'n')
+ordihull(diet_MDS,groups=echo,draw="polygon",col="grey90",label=F)
+orditorp(diet_MDS,display="sites",
+         air=0.01,cex=1.25)
+title('Family')
+dev.off()
