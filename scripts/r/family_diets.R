@@ -161,19 +161,40 @@ prop_present$for_x <- paste(prop_present$Species, ' (', prop_present$nbats, ' sa
 prop_present$for_x <- gsub('\\(1 samples\\)', '\\(1 sample\\)', prop_present$for_x)
 
 prop_present$order <- rep(NA, nrow(prop_present)) #Make a column of the order which each family belongs to
-prop_present$order[prop_present$Family %in% c('Acrididae', 'Gryllidae', 'Tettigoniidae', 'Acrididae')] <- 'Orthoptera (Grasshoppers)'
+prop_present$order[prop_present$Family %in% c('Sparassidae', 'Salticidae', 'Araneidae', 'Theridiidae', 'Clubionidae', 'Linyphiidae', 'Pholcidae', 
+                                              'Uloboridae')] <- 'Araneae (Spiders)'
+prop_present$order[prop_present$Family %in% c('Ectobiidae', 'Blaberidae', 'Termitidae', 'Blattidae', 'Rhinotermitidae', 'Cryptocercidae')] <- 'Blattodea (Termites\nand cockroaches)'
+prop_present$order[prop_present$Family %in% c('Chrysomelidae', 'Cerambycidae', 'Curculionidae', 'Elateridae', 'Carabidae', 'Ptilodactylidae', 'Mordellidae', 'Eucnemidae',
+                                              'Latridiidae', 'Dermestidae', 'Mycetophagidae', 'Dytiscidae', 'Nitidulidae', 'Cleridae', 'Leiodidae', 'Byrrhidae',
+                                              'Throscidae', 'Scarabaeidae', 'Psephenidae', 'Tenebrionidae', 'Zopheridae', 'Cantharidae')] <- 'Coleoptera (Beetles)'
 prop_present$order[prop_present$Family %in% c('Culicidae', 'Chironomidae', 'Tachinidae', 'Sciaridae', 'Psychodidae', 'Phoridae', 'Ceratopogonidae', 
-                                              'Muscidae', 'Mycetophilidae', 'Chloropidae', 'Calliphoridae', 'Tabanidae', 'Stratiomyidae', 'Cecidomyiidae')] <- 'Diptera (Flies)'
-prop_present$order[prop_present$Family %in% c('Chrysomelidae', 'Cerambycidae', 'Curculionidae', 'Elateridae', 'Carabidae', 'Ptilodactylidae')] <- 'Coleoptera (Beetles)'
-prop_present$order[prop_present$Family %in% c('Cicadidae', 'Cicadellidae', 'Pentatomidae', 'Derbidae', 'Aphididae', 'Miridae')] <- 'Hemiptera (True bugs)'
-prop_present$order[prop_present$Family %in% c('Ectobiidae', 'Blaberidae', 'Termitidae', 'Blattidae')] <- 'Blattodea (Termites\nand cockroaches)'
-prop_present$order[prop_present$Family %in% c('Caeciliusidae')] <- 'Psocoptera (Barkflies)'
-prop_present$order[prop_present$Family %in% c('Geometridae', 'Lymantriidae', 'Tortricidae', 'Noctuidae', 'Lycaenidae', 'Sphingidae', 'Crambidae')] <- 'Lepidoptera (Butterflies and moths)'
-prop_present$order[prop_present$Family %in% c('Ichneumonidae', 'Mutillidae')] <- 'Hymenoptera (Ants, wasps, etc)'
-prop_present$order[prop_present$Family %in% c('Sparassidae', 'Salticidae', 'Araneidae', 'Theridiidae')] <- 'Araneae (Spiders)'
-prop_present$order[prop_present$Family %in% c('Mantidae')] <- 'Mantodea (Mantises)'
-prop_present$order[prop_present$Family %in% c('Tarsonemidae', 'Eupodidae')] <- 'Trombidiformes (Mites)'
-prop_present$order[prop_present$Family %in% c('Entomobryidae')] <- 'Entomobryomorpha (Springtails)'
+                                              'Muscidae', 'Mycetophilidae', 'Chloropidae', 'Calliphoridae', 'Tabanidae', 'Stratiomyidae', 'Cecidomyiidae', 'Milichiidae',
+                                              'Syrphidae', 'Asilidae', 'Ephydridae', 'Dolichopodidae', 'Pediciidae', 'Drosophilidae', 'Keroplatidae', 'Tipulidae',
+                                              'Platypezidae')] <- 'Diptera (Flies)'
+prop_present$order[prop_present$Family %in% c('Entomobryidae', 'Isotomidae')] <- 'Entomobryomorpha (Springtails)'
+prop_present$order[prop_present$Family %in% c('Baetidae', 'Heptageniidae', 'Ephemerellidae')] <- 'Ephemeroptera (Mayflies)'
+prop_present$order[prop_present$Family %in% c('Euphausiidae')] <- 'Euphausiacea (krill)'
+prop_present$order[prop_present$Family %in% c('Armadillidiidae')] <- 'Isopoda (Woodlice)'
+prop_present$order[prop_present$Family %in% c('Cicadidae', 'Cicadellidae', 'Pentatomidae', 'Derbidae', 'Aphididae', 'Miridae', 'Fulgoridae', 'Flatidae', 'Cydnidae',
+                                              'Pemphigidae', 'Kinnaridae', 'Rhyparochromidae', 'Dictyopharidae', 'Delphacidae', 'Nogodinidae', 'Cixiidae', 'Hormaphididae',
+                                              'Lygaeidae')] <- 'Hemiptera (True bugs)'
+prop_present$order[prop_present$Family %in% c('Ichneumonidae', 'Mutillidae', 'Perilampidae', 'Formicidae', 'Braconidae', 'Dryinidae', 'Agaonidae', 'Vespidae',
+                                              'Tenthredinidae')] <- 'Hymenoptera (Ants, wasps, etc)'
+prop_present$order[prop_present$Family %in% c('Geometridae', 'Lymantriidae', 'Tortricidae', 'Noctuidae', 'Lycaenidae', 'Sphingidae', 'Crambidae', 'Tineidae', 'Erebidae',
+                                              'Nolidae', 'Adelidae', 'Pterophoridae', 'Limacodidae', 'Pyralidae', 'Blastobasidae', 'Hesperiidae', 'Lecithoceridae')] <- 'Lepidoptera (Butterflies and moths)'
+prop_present$order[prop_present$Family %in% c('Mantidae', 'Tarachodidae')] <- 'Mantodea (Mantises)'
+prop_present$order[prop_present$Family %in% c('Laelapidae')] <- 'Mesostigmata (Mites)'
+prop_present$order[prop_present$Family %in% c('Chrysopidae', 'Hemerobiidae', 'Coniopterygidae')] <- 'Neuroptera (Net-winged insects)'
+prop_present$order[prop_present$Family %in% c('Brachychthoniidae')] <- 'Oribatida (Moss mites)'
+prop_present$order[prop_present$Family %in% c('Acrididae', 'Gryllidae', 'Tettigoniidae', 'Acrididae', 'Chorotypidae')] <- 'Orthoptera (Grasshoppers)'
+prop_present$order[prop_present$Family %in% c('Diapheromeridae', 'Phasmatidae')] <- 'Phasmatodea (Stick insects)'
+prop_present$order[prop_present$Family %in% c('Paradoxosomatidae')] <- 'Polydesmida (Millipedes)'
+prop_present$order[prop_present$Family %in% c('Caeciliusidae', 'Archipsocidae', 'Stenopsocidae', 'Lepidopsocidae', 'Psocidae', 'Epipsocidae')] <- 'Psocoptera (Barkflies)'
+prop_present$order[prop_present$Family %in% c('Eremaeidae', 'Brachychthoniida', 'Scheloribatidae', 'Ceratozetidae', 'Oppiidae')] <- 'Sarcoptiformes (Mites)'
+prop_present$order[prop_present$Family %in% c('Philopotamidae', 'Psychomyiidae', 'Leptoceridae')] <- 'Trichoptera (Caddisflies)'
+prop_present$order[prop_present$Family %in% c('Phlaeothripidae')] <- 'Thysanoptera (Thrips)'
+prop_present$order[prop_present$Family %in% c('Tarsonemidae', 'Eupodidae', 'Bdellidae', 'Cheyletidae', 'Ereynetidae', 'Teneriffiidae', 'Cunaxidae')] <- 'Trombidiformes (Mites)'
+
 
 #prop_present$order <- gsub(' \\(', '\n(', prop_present$order) #This would put the common name on a newline, however I've commented it out for now to make the order itself bigger in the plots
 prop_present$order <-  gsub(' .+', '', prop_present$order)
@@ -193,7 +214,7 @@ longtiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(y = f
 
 longtiles
 
-pdf('plots/familyplots/tile_long_family.pdf', height = 9)
+pdf('plots/familyplots/tile_long_family.pdf', height = 14)
 longtiles
 dev.off()
 
