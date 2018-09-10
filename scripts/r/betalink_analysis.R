@@ -49,16 +49,17 @@ for_plot$STWN <- for_plot$ST/for_plot$WN
 melted_forplot <- melt(for_plot)
 
 
-betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=value, colour = value))+
-  scale_colour_gradient(low = "white",
-                        high = "blue", limits = c(0,1))+
-  theme_dark()+
+betaplot <- ggplot(melted_forplot, aes(i, fct_rev(j)))+ geom_point(aes(size=value))+
+  theme_bw()+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position = 'bottom')+
   facet_wrap(~ variable, labeller = label_bquote(italic(beta [.(as.character(variable))])),
              nrow = 3)+
-  labs(x= NULL, y = NULL)
+  labs(x= NULL, y = NULL)+
+  labs(size = "Value")
+
+betaplot
 
 species_diss <- ggplot(for_plot, aes(i, fct_rev(j)))+ geom_point(aes(size=S))+
   scale_colour_gradient(low = "white",
