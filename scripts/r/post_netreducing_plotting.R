@@ -9,10 +9,15 @@
 library(MASS)
 library(reshape2)
 library(ggplot2)
+library(here)
 
+setwd(here())
 
 allfiles <- list.files(path = 'results/rarifying_networks/', pattern = '.csv')
 allfiles <- paste('results/rarifying_networks/', allfiles, sep = '')
+
+#Modularity was calculated separately in a big array, and its outputs aren't correctly formatted for this script
+allfiles <- allfiles[-grep('modularity', allfiles)]
 
 firstup <- function(x) {
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
@@ -32,25 +37,24 @@ for(i in 1: length(allfiles)){
   
   out_df <- out_df[out_df$included ==T,]
   
-  #TEMP to make things quicker in testing, i made a subset
-  out_df <- out_df[out_df$iteration==1,]
-  
-  categories <- unique(out_df[,c('Species','netnames','iteration', 'n_used')])
-  
-  sp <- categories$Species[1]
-  net <- categories$netnames[1]
-  it <- categories$iteration[1]
-  n_used <- categories$n_used[1]
-  
-  n_bats <- length(which(out_df$Species == sp & out_df$netnames == net & out_df$iteration== it & out_df$n_used == n_used))
   
   
-  which(out_df$Species == categories$Species[2] && out_df$netnames == categories$netnames[2] && out_df$iteration== categories$iteration[2] && out_df$n_used == categories$n_used[2])
+  # categories <- unique(out_df[,c('Species','netnames','iteration', 'n_used')])
+  # 
+  # sp <- categories$Species[1]
+  # net <- categories$netnames[1]
+  # it <- categories$iteration[1]
+  # n_used <- categories$n_used[1]
+  # 
+  # n_bats <- length(which(out_df$Species == sp & out_df$netnames == net & out_df$iteration== it & out_df$n_used == n_used))
+  # 
+  # 
+  # which(out_df$Species == categories$Species[2] && out_df$netnames == categories$netnames[2] && out_df$iteration== categories$iteration[2] && out_df$n_used == categories$n_used[2])
+  # 
   
   
   
-  
-  possible_list <- table(out_df$Species , out_df$netnames, out_df$n_used, out_df$iteration)
+  #possible_list <- table(out_df$Species , out_df$netnames, out_df$n_used, out_df$iteration)
   
   bigtax <- dcast(out_df[,c(2,5,6,7,8,9)], n_used + netnames + metricval ~ Species, fun.aggregate = length)
   bigtax$diversity <- sapply(seq(1,nrow(bigtax)), function(x) vegan::diversity(bigtax[x,seq(5, ncol(bigtax)),]))
@@ -64,8 +68,8 @@ for(i in 1: length(allfiles)){
                "#be7239")
   
   diversity_scatter <- ggplot(bigtax, aes(x = diversity, y = metricval, colour= netnames))+ 
-    geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
-    labs(x='Shannon diversity', y = infilename)+
+    geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
+    labs(x='Shannon diversity', y = firstup(infilename))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
   
   
@@ -75,7 +79,7 @@ for(i in 1: length(allfiles)){
   dev.off()
   
   sp_scatter <- ggplot(longtax, aes(x = value, y = metricval, colour= netnames))+ 
-    geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
+    geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
     labs(x='Number of individuals', y = infilename)+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
     facet_wrap(~ Species, scales = 'free_x')
@@ -88,12 +92,20 @@ for(i in 1: length(allfiles)){
   
   
   individuals_scatter <- ggplot(longtax, aes(x = n_used, y = metricval, colour= netnames))+ 
-    geom_point(alpha=0.8)+ scale_color_manual(values=palette, name = 'Site')+
-    labs(x='Number of individuals', y = infilename)+
+    geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
+    labs(x='Number of individuals', y = firstup(infilename))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
   individuals_scatter
   pdf(paste('plots/netreducing/rarifying_', infilename, '_individuals.pdf', sep = ''))
   print(individuals_scatter)
+  dev.off()
+  
+  tiff(paste('plots/netreducing/rarifying_', infilename, '_individuals.tiff', sep = ''), width = 700, height =700)
+  print(individuals_scatter)
+  dev.off()
+  
+  tiff(paste('plots/netreducing/rarifying_', infilename, '_diversity.tiff', sep = ''), width = 700, height =700)
+  print(diversity_scatter)
   dev.off()
   
   cat(infilename, ' finished\n')
