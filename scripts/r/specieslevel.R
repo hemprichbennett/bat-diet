@@ -76,16 +76,32 @@ centrality_melted$variable %<>%
 centrality_plot_list <- list()
 for(i in 1:length(unique(centrality_melted$variable))){
   met <- unique(centrality_melted$variable)[i]
-  centrality_plot_list[[met]] <- ggplot(centrality_melted[which(centrality_melted$variable==met),], aes(x=site, y = fct_rev(species)))+ 
-    geom_tile(aes(fill=value))+
-    scale_fill_gradient(low = "white",
-                        high = "black", name = gsub(' ', '\n', met)) + 
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-    labs(x= 'Site', y = 'Species')
-  pdf(paste('plots/species/', met, '.pdf', sep = ''))
-  print(centrality_plot_list[[met]])
-  dev.off()
+  if(met =="Closeness centrality" ){
+    centrality_plot_list[[met]] <- ggplot(centrality_melted[which(centrality_melted$variable==met),], aes(x=site, y = fct_rev(species)))+ 
+      geom_tile(aes(fill=value))+
+      scale_fill_gradient(low = "white",
+                          high = "black", name = gsub(' ', '\n', met), breaks = c(0.08, 0.1, 0.12)) + 
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+            axis.text.y = element_text(face = "italic"), legend.position="bottom")+
+      labs(x= 'Site', y = 'Species')
+    pdf(paste('plots/species/', met, '.pdf', sep = ''), height = 9)
+    print(centrality_plot_list[[met]])
+    dev.off()
+  }else{
+    centrality_plot_list[[met]] <- ggplot(centrality_melted[which(centrality_melted$variable==met),], aes(x=site, y = fct_rev(species)))+ 
+      geom_tile(aes(fill=value))+
+      scale_fill_gradient(low = "white",
+                          high = "black", name = gsub(' ', '\n', met)) + 
+      theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+      theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+            axis.text.y = element_text(face = "italic"), legend.position="bottom")+
+      labs(x= 'Site', y = 'Species')
+    pdf(paste('plots/species/', met, '.pdf', sep = ''), height = 9)
+    print(centrality_plot_list[[met]])
+    dev.off()
+  }
+  
 }
 
 
