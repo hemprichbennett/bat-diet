@@ -68,7 +68,7 @@ for_facets <- for_facets[-which(for_facets$metric %in% c('Alatalo\ninteraction\n
 metrics_facet <- ggplot(for_facets, aes(y =clustering, x= dummy_for_plotting, colour = network))+
   geom_errorbarh(aes(xmin=lower, xmax=upper, colour = network), height = 0.4, alpha = 0.8, show.legend = F)+
   geom_point(aes(y = clustering, x = actual))+
-  facet_wrap(~metric, scales = 'free_x', ncol = 3, strip.position="bottom")+
+  facet_wrap(~metric, scales = 'free', ncol = 3, strip.position="bottom")+
   scale_colour_manual(values=cbPalette, name = 'Observed network\nvalue')+
   theme_bw()+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -79,7 +79,7 @@ metrics_facet <- ggplot(for_facets, aes(y =clustering, x= dummy_for_plotting, co
   labs(y = 'Clustering %', x = NULL)
 metrics_facet
 
-pdf('plots/randomized_ranges/all_facet.pdf', width = 12)
+pdf('plots/randomized_ranges/all_facet.pdf', width = 15)
 metrics_facet
 dev.off()
 
