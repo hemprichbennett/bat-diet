@@ -76,7 +76,7 @@ betaplot
 
 ## @knitr betalink_extras
 
-pdf('plots/beta/betaplot.pdf')
+pdf('plots/beta/betaplot.pdf', height = 10)
 betaplot
 dev.off()
 
