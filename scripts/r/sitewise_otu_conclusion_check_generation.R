@@ -31,6 +31,7 @@
   
   names(netlists) <- names(rawnets)
   
+  netlists <- lapply(netlists, function(x) lapply(x, function(y) apply(y, 2, as.numeric)))
   
   #Specify which index(s) to use
   
