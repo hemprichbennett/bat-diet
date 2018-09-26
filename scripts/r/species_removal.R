@@ -169,14 +169,15 @@ pdf('plots/species/species_influence_top.pdf')
 most_inf
 dev.off()
 
+italic.text <- element_text(face = "italic")
 
 all_sp <- ggplot(merged, aes(x= Network, y = fct_rev(minus_species)))+ geom_tile(aes(fill=rankings))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   facet_wrap(~ Metric)+
   scale_fill_gradient(low = 'black', high = 'lightblue', name = 'Influence\nranking')+
-  labs(x = 'Site', y = 'Species')
+  labs(x = 'Site', y = 'Species')+ theme(axis.text.y = italic.text, legend.position="bottom")
 all_sp  
 
-pdf('plots/species/species_influence_all.pdf')
+pdf('plots/species/species_influence_all.pdf', height = 10)
 all_sp
 dev.off()
