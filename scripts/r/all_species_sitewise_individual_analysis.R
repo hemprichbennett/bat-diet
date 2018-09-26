@@ -201,10 +201,11 @@ tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
   theme(strip.text.x = element_text(size = 12))+
   facet_wrap(~Species)+
-  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
+  theme(legend.position="bottom", strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),
+        strip.text = element_text(face = "italic"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
 tiles
 
-pdf('plots/sitewise_proportion_of_bats_containing.pdf', height = 9)    
+pdf('plots/sitewise_proportion_of_bats_containing.pdf', height = 12)    
 tiles
 dev.off()
 
@@ -336,7 +337,8 @@ sp_ridge <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Si
         text = element_text(size=12))+
   theme_bw()+
    theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-         strip.text = element_text(face = "italic")) #This makes the facet titles italic)
+         strip.text = element_text(face = "italic"), 
+         legend.position="bottom") #This makes the facet titles italic)
 
 sp_ridge
 
