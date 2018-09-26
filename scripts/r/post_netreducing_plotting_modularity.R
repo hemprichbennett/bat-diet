@@ -49,22 +49,24 @@ palette <- c("#75aa56",
 diversity_scatter <- ggplot(bigtax, aes(x = diversity, y = metricval, colour= netnames))+ 
   geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
   labs(x='Shannon diversity', y = firstup(infilename))+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  theme_bw() + theme(legend.position="bottom",
+                     panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 
 
 diversity_scatter  
-pdf(paste('plots/netreducing/rarifying_', infilename, '_diversity.pdf', sep = ''))
+pdf(paste('plots/netreducing/rarifying_', infilename, '_diversity.pdf', sep = ''), width = 5)
 print(diversity_scatter)
 dev.off()
 
 sp_scatter <- ggplot(longtax, aes(x = value, y = metricval, colour= netnames))+ 
   geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
   labs(x='Number of individuals', y = infilename)+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
+  theme_bw() + theme(legend.position="bottom",
+                     panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   facet_wrap(~ Species, scales = 'free_x')
 
 sp_scatter  
-pdf(paste('plots/netreducing/rarifying_', infilename, '_sp.pdf', sep = ''))
+pdf(paste('plots/netreducing/rarifying_', infilename, '_sp.pdf', sep = ''), width = 5)
 print(sp_scatter)
 dev.off()
 
@@ -73,17 +75,18 @@ dev.off()
 individuals_scatter <- ggplot(longtax, aes(x = n_used, y = metricval, colour= netnames))+ 
   geom_point(alpha=0.3)+ scale_color_manual(values=palette, name = 'Site')+
   labs(x='Number of individuals', y = firstup(infilename))+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  theme_bw() + theme(legend.position="bottom",
+                     panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 individuals_scatter
-pdf(paste('plots/netreducing/rarifying_', infilename, '_individuals.pdf', sep = ''))
+pdf(paste('plots/netreducing/rarifying_', infilename, '_individuals.pdf', sep = ''), width = 5)
 print(individuals_scatter)
 dev.off()
 
-tiff(paste('plots/netreducing/rarifying_', infilename, '_individuals.tiff', sep = ''), width = 700, height =700)
+tiff(paste('plots/netreducing/rarifying_', infilename, '_individuals.tiff', sep = ''), width = 1800, height =2400, res = 500)
 print(individuals_scatter)
 dev.off()
 
-tiff(paste('plots/netreducing/rarifying_', infilename, '_diversity.tiff', sep = ''), width = 700, height =700)
+tiff(paste('plots/netreducing/rarifying_', infilename, '_diversity.tiff', sep = ''), width = 1800, height =2400, res = 500)
 print(diversity_scatter)
 dev.off()
 
