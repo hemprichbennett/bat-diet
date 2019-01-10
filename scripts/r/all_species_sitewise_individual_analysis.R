@@ -196,13 +196,15 @@ balloons
 
 tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_rev(Order), x =Site)) + geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient(low = "white",
-                      high = "black", name = 'Proportion\nof bats\nconsuming') +
+                      high = "black", name = 'Proportion\nof bats\nconsuming',
+                      breaks=c(0.25,0.5,0.75, 1)) +
   labs(x ="Site", y = 'Prey taxa')+
   theme(panel.background=element_blank(), axis.text.x = element_text(angle = 90, hjust = 1))+
   theme(strip.text.x = element_text(size = 12))+
   facet_wrap(~Species)+
-  theme(legend.position="bottom", strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),
+  theme(legend.position="bottom", legend.justification='right', strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),
         strip.text = element_text(face = "italic"))#strip stuff sorts the facet labels, spacing adjusts the space between facets
+
 tiles
 
 pdf('plots/sitewise_proportion_of_bats_containing.pdf', height = 12)    
@@ -309,6 +311,14 @@ summary(fixed.dum)
 fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
 summary(fixed_hab)
 
+#Run a fixed effect using site AND habitat type, then AIC it
+both <- lm(degree ~ hab_type + Site + factor(Species) - 1, data = degree_df)
+
+step_mod <- MASS::stepAIC(both, direction = 'backward')
+
+step_mod
+summary(step_mod)
+
 anova(fixed.dum, fixed_hab)
 
 #Isolate and work with the coefficients from the best model
@@ -348,6 +358,29 @@ dev.off()
 
 jpeg('plots/degree_ridges.jpg', units = 'in', width = 9, height = 9, res=300)
 sp_ridge
+dev.off()
+
+tall <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
+  geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
+  theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
+  scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
+  scale_x_continuous(expand = c(0.01, 0)) + #Make the space between the labels and plot smaller
+  scale_y_discrete(expand = c(0.01, 0))+ #Make it so the top series actually fits in the plot
+  ylab(NULL)+ xlab('Number of prey OTUs')+
+  facet_wrap( ~ Species, ncol=2)+ #free_x is required so that the x-axes aren't all constrained to showing the same thing
+  theme(strip.background = element_rect(fill="white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),#strip stuff sorts the facet labels, spacing adjusts the space between facets
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        text = element_text(size=12))+
+  theme_bw()+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+        strip.text = element_text(face = "italic"), 
+        legend.position="bottom") #This makes the facet titles italic)
+
+tall
+
+pdf('plots/degree_ridges_tall.pdf', height = 12)
+tall
 dev.off()
 
 #For presentation
