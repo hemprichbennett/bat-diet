@@ -1,6 +1,7 @@
 
 library(here)
-library(magrittr)  
+library(magrittr)
+library(bipartite)
 setwd(here())
 getwd()
 source('scripts/r/r_network_gen.r')
@@ -40,46 +41,14 @@ Reduce(intersect, samples)
 
 #####Yay plotting time ####
 
-igraph_list <- list()
+pdf('plots/Site comparisons/all_bipartite.pdf', width = 10)
 
-for(n in 1:length(nets)){
-  net <- nets[[n]]
-  molten_net <- melt(net)
-  molten_net_2 <- molten_net[(which(molten_net[,3] != 0)),]
-  bat_igraph <- graph.data.frame(molten_net_2, directed = F)
-  #bat_igraph$layout <- layout_in_circle
-  V(bat_igraph)$type <- V(bat_igraph)$name %in% molten_net_2[,1]
-  igraph_list[[n]] <- bat_igraph
+par(mfrow = c(2,2))
+for(i in 1:length(nets)){
+  #a bit of trickery to get the loop to do the plots alphabetically
+  j <- order(names(nets))[i]
   
-  #Make colours vector
-  node_cul <- rep("yellow", length(V(bat_igraph)))
-  for(i in 1: length(V(bat_igraph))){
-    if(length(grep('denovo',V(bat_igraph)[[i]]$name))>0){ #If the node is an OTU
-      node_cul[i] <- "#01c2cd"
-    }
-    
-  }
-  
-  V(bat_igraph)$name <- gsub('denovo.+', '', V(bat_igraph)$name)
-  pdf(paste('plots/Site comparisons/', names(nets)[n], '.pdf', sep =''))
-  plot(bat_igraph, vertex.size = 10, vertex.color=node_cul, main = names(nets)[n], width = 0.01, label.dist = 1)
-  dev.off()
+  plotweb(nets[[j]], high.lablength = '0', low.lablength = '0')
+  title(names(nets)[j])
 }
-
-par(mfrow= c(2,3))
-
-
-pdf('plots/Site comparisons/all_nets.pdf')
-par(mfrow= c(3,1))
-plot(igraph_list[[1]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[1])
-plot(igraph_list[[2]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[2])
-plot(igraph_list[[3]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[3])
-dev.off()
-
-png('plots/Site comparisons/all_nets.png')
-par(mfrow= c(3,1))
-plot(igraph_list[[1]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[1])
-plot(igraph_list[[2]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[2])
-plot(igraph_list[[3]], vertex.size = 10, vertex.color=node_cul, vertex.label=NA, main = names(nets)[3])
-
 dev.off()
