@@ -188,13 +188,6 @@ prop_present$Species <- gsub('Rhse', 'Rhinolophus\nsedulus', prop_present$Specie
 prop_present$Species <- gsub('Rhtr', 'Rhinolophus\ntrifoliatus', prop_present$Species)
 
 
-balloons <- ggplot(data = prop_present[which(prop_present$nbats >9),], aes(y = fct_rev(Order), x =Site)) + geom_point(aes(size=prop, colour = prop))+ 
-  scale_colour_gradient2(low = 'white',  high = 'steelblue')+
-  theme(panel.background=element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))+
-  labs(fill='Proportion of MOTU present',
-       x ="Site", y = 'Prey taxa')+
-  facet_wrap(~Species)
-balloons
 
 tiles <- ggplot(data = prop_present[which(prop_present$nbats >5),], aes(y = fct_rev(Order), x =Site)) + geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient(low = "white",
@@ -217,23 +210,7 @@ jpeg('plots/sitewise_proportion_of_bats_containing.jpg', units = 'in', width = 9
 tiles
 dev.off()
 
-#now make a separate dataframe for analysing with a glmm
-# order_df <- all_ecology[,c(1, 58, 56, seq(23,39))]
-# order_df <- melt(order_df, id.vars = c('Sample', 'Species', 'Site'))
-# colnames(order_df)[c(4,5)] <- c('Order', 'nMOTU')
-# order_df$`nMOTU` <- as.integer(order_df$nMOTU)
-# order_df$genus <- rep(NA, nrow(order_df))
-# order_df$genus[grepl('Hi', order_df$Species)] <- 'Hipposideros'
-# order_df$genus[grepl('Rh', order_df$Species)] <- 'Rhinolophus'
-# order_df$genus[grepl('Ke', order_df$Species)] <- 'Kerivoula'
-# order_df$echolocation <- rep(NA, nrow(order_df))
-# order_df$echolocation[grepl('Ke', order_df$Species)] <- 'LDC'
-# order_df$echolocation[grepl('Rh', order_df$Species)] <- 'HDC'
-# order_df$echolocation[grepl('Hi', order_df$Species)] <- 'HDC'
-# order_df$hab_type <- rep(NA, nrow(order_df))
-# order_df$hab_type[grepl('Danum', order_df$Site)] <- 'Primary'
-# order_df$hab_type[grepl('Maliau', order_df$Site)] <- 'Primary'
-# order_df$hab_type[grepl('SAFE', order_df$Site)] <- 'Logged'
+
 
 degree_df <- data.frame(all_ecology$degree, all_ecology$Species, all_ecology$Site, all_ecology$Year)
 colnames(degree_df) <- gsub('all_ecology\\.', '', colnames(degree_df))
@@ -241,53 +218,13 @@ degree_df$genus <- rep(NA, nrow(degree_df))
 degree_df$genus[grepl('Hi', degree_df$Species)] <- 'Hipposideros'
 degree_df$genus[grepl('Rh', degree_df$Species)] <- 'Rhinolophus'
 degree_df$genus[grepl('Ke', degree_df$Species)] <- 'Kerivoula'
-degree_df$echolocation <- rep(NA, nrow(degree_df))
-degree_df$echolocation[grepl('Ke', degree_df$Species)] <- 'LDC'
-degree_df$echolocation[grepl('Rh', degree_df$Species)] <- 'HDC'
-degree_df$echolocation[grepl('Hi', degree_df$Species)] <- 'HDC'
 degree_df$hab_type <- rep(NA, nrow(degree_df))
 degree_df$hab_type[grepl('Danum', degree_df$Site)] <- 'Primary'
 degree_df$hab_type[grepl('Maliau', degree_df$Site)] <- 'Primary'
 degree_df$hab_type[grepl('SAFE', degree_df$Site)] <- 'Logged'
 degree_df$hab_type[grepl('SBE', degree_df$Site)] <- 'Logged, replanted'
 degree_df$degree <- as.integer(degree_df$degree)
-library(glmm)
-ptm<-proc.time()
-mod <- glmm(degree ~ 0 + Site, random = list(~ 0 + Species,
-                                             ~ 0 + hab_type,
-                                             ~ 0 + genus,
-                                             ~ 0 + echolocation), varcomps.names = c("Sp", "hab", 'genus', 'echo'), data = degree_df,
-            family.glmm = poisson.glmm, m = 10^2, debug = TRUE)
-proc.time() - ptm
 
-summary(mod)
-mcse(mod)
-se(mod)
-
-
-mod2 <- glmm(degree ~ 0 + Site + Species, random = list(
-                                             ~ 0 + hab_type,
-                                             ~ 0 + genus,
-                                             ~ 0 + echolocation), varcomps.names = c( "hab", 'genus', 'echo'), data = degree_df,
-            family.glmm = poisson.glmm, m = 10^2, debug = TRUE)
-
-
-#####Simple linear model ####
-simple_lm <- lm(degree ~ Site, degree_df)
-summary(simple_lm)
-
-sp_lm <- lm(degree ~ Site + Species, degree_df)
-summary(sp_lm)
-
-sp_int_lm <- lm(degree ~ Site * Species, degree_df)
-summary(sp_int_lm)
-
-step.model <- MASS::stepAIC(sp_lm, direction = "both", 
-                      trace = FALSE)
-summary(step.model)
-
-
-TukeyHSD(aov(degree~ Site, degree_df))
 
 library(plm)
 library(car)       # Companion to applied regression 
@@ -306,12 +243,7 @@ degree_df$Species %<>%
   gsub('Rhse', 'Rhinolophus sedulus', .)%<>%
   gsub('Rhtr', 'Rhinolophus trifoliatus', .)
 
-fixed.dum <- lm(degree ~ Site + factor(Species) - 1, data = degree_df)
-summary(fixed.dum)
 
-
-fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
-summary(fixed_hab)
 
 #Make a table of samples used, for thesis
 
@@ -321,27 +253,15 @@ sample_table <- table(degree_df$Species, degree_df$SiteAndYear)
 write.csv(sample_table,'results/sample_table.csv')
 
 #Run a fixed effect using site AND habitat type, then AIC it
-both <- lm(degree ~ factor(hab_type) + Site + factor(Species) - 1, data = degree_df)
+both <- lm(degree ~ factor(hab_type) + factor(Site) + factor(Species), data = degree_df)
 
 step_mod <- MASS::stepAIC(both, direction = 'backward')
 
-step_mod
+step_mod$anova
 summary(step_mod)
-# 
-# anova(fixed.dum, fixed_hab)
-# 
-# #Isolate and work with the coefficients from the best model
-# f_h <- summary(fixed_hab)
-# f_h <- f_h$coefficients
-# rownames(f_h) %<>%
-#   gsub('hab_type', 'Habitat: ', .)%<>%
-#   gsub('factor\\(Species\\)', 'Species: ', .)
-# 
-# f_h <- round(f_h, 3)
-# 
-# f_h
-# write.csv(f_h, 'results/degree_model_coefficients.csv')
-# 
+
+
+
 sp_ridge <- ggplot(degree_df, aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
   geom_density_ridges(scale= 0.85, panel_scaling = F)+ #The scale determines the space between the rows
   theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
@@ -369,7 +289,7 @@ jpeg('plots/degree_ridges.jpg', units = 'in', width = 9, height = 9, res=300)
 sp_ridge
 dev.off()
 
-tall <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
+tall <- ggplot(degree_df, aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
   geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
   theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
   scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
@@ -425,14 +345,6 @@ dev.off()
 
 library(corrplot)
 
-taxa_for_cor <- t(taxa_mat)
-cormat <- round(cor(taxa_for_cor),2)
-res1 <- cor.mtest(taxa_mat, conf.level = .95)
-
-taxa_corr <- corrplot(cormat, method = "circle", p.mat = res1$p, sig.level = .05, type = 'upper', order = 'AOE',
-                      tl.col = "black", tl.srt = 45, insig = 'blank',
-                      bg = "black")
-
 #### manipulate the degree for corplot ####
 
 
@@ -456,44 +368,3 @@ corrplot(bigcormat, method = "circle", p.mat = res1$p, sig.level = .05, type = '
 
 
 dev.off()
-
-
-molten <- melt(for_bigmat)
-colnames(molten) <- c('sample', 'order', 'value')
-ggplot(molten[which(molten$order %in% c('Lepidoptera', 'Diptera', 'Coleoptera')),], aes(x=sample, y = value, colour=order))+ geom_point()+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-  geom_line()
-
-ggplot(molten, aes(molten$value))+ facet_wrap(~ order, ncol = 3)+
-  geom_histogram()+
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
-  
-  
-
-# yhat <- fixed.dum$fitted
-# scatterplot(yhat ~ degree_df$Site | degree_df$Species,  xlab ="Site", ylab ="yhat", boxplots = FALSE,smooth = FALSE)
-# abline(lm(dataPanel101$y~dataPanel101$x1),lwd=3, col="red")
-
-
-#These aren't working
-fixed <- plm(degree ~ Site + Species, data=degree_df, model="within")
-summary(fixed)
-
-
-
-# lmp <- function (modelobject) {
-#   if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
-#   f <- summary(modelobject)$fstatistic
-#   p <- pf(f[1],f[2],f[3],lower.tail=F)
-#   attributes(p) <- NULL
-#   return(p)
-# } #We can't directly access a model's p-value for some reason, this function does it https://stackoverflow.com/questions/5587676/pull-out-p-values-and-r-squared-from-a-linear-regression
-# 
-
-# summary_df <- data.frame(r2=c(summary(simple_lm)$adj.r.squared, summary(sp_lm)$adj.r.squared, summary(sp_int_lm)$adj.r.squared),
-#                          F=c(summary(simple_lm)$fstatistic[1], summary(sp_lm)$fstatistic[1], summary(sp_int_lm)$fstatistic[1]),
-#                          p=c(lmp(simple_lm), lmp(sp_lm), lmp(sp_int_lm)))
-# 
-# rownames(summary_df) <- c('simple_lm', 'sp_lm', 'sp_int_lm')
-# summary_df
-# t(summary_df)
