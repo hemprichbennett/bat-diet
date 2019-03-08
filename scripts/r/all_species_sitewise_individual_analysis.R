@@ -27,9 +27,9 @@ field_data$Site <- gsub('DVCA', 'Danum', field_data$Site)
 field_data$Site <- gsub('DANUM', 'Danum', field_data$Site)
 field_data$Site <- gsub('MALIAU', 'Maliau', field_data$Site)
 
-all_interactions <- r_network_gen(collapse_species = F, desired_species = NULL, include_malua = T, filter_species = T, lulu = T)
+all_interactions <- r_network_gen(collapse_species = F, desired_species = NULL, include_malua = F, filter_species = T, lulu = T)
 
-desired_cols <- c('MOTU', 'DANUM', 'MALIAU', 'SAFE', 'SBE')
+desired_cols <- c('MOTU', 'DANUM', 'MALIAU', 'SAFE')
 
 all_interactions <- all_interactions[,-which(!all_interactions[1,] %in% desired_cols)]
 
@@ -244,7 +244,6 @@ degree_df$Species %<>%
   gsub('Rhtr', 'Rhinolophus trifoliatus', .)
 
 
-
 #Make a table of samples used, for thesis
 
 degree_df$SiteAndYear <- paste0(degree_df$Site, ', ', degree_df$Year)
@@ -252,15 +251,24 @@ sample_table <- table(degree_df$Species, degree_df$SiteAndYear)
 
 write.csv(sample_table,'results/sample_table.csv')
 
+#Run two fixed effects models, then compare them 
+fixed_dum <- lm(degree ~ Site + factor(Species) - 1, data = degree_df)
+summary(fixed_dum)
+
+
+fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
+summary(fixed_hab)
+
+
+anova(fixed_dum, fixed_hab)
+
 #Run a fixed effect using site AND habitat type, then AIC it
-both <- lm(degree ~ factor(hab_type) + factor(Site) + factor(Species), data = degree_df)
+both <- lm(degree ~ factor(hab_type) + factor(Site) + factor(Species) -1, data = degree_df)
 
 step_mod <- MASS::stepAIC(both, direction = 'backward')
 
 step_mod$anova
 summary(step_mod)
-
-
 
 sp_ridge <- ggplot(degree_df, aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
   geom_density_ridges(scale= 0.85, panel_scaling = F)+ #The scale determines the space between the rows
@@ -344,6 +352,14 @@ dev.off()
 ####for full corrplot ####
 
 library(corrplot)
+
+taxa_for_cor <- t(taxa_mat)
+cormat <- round(cor(taxa_for_cor),2)
+res1 <- cor.mtest(taxa_mat, conf.level = .95)
+
+taxa_corr <- corrplot(cormat, method = "circle", p.mat = res1$p, sig.level = .05, type = 'upper', order = 'AOE',
+                       tl.col = "black", tl.srt = 45, insig = 'blank',
+                       bg = "black")
 
 #### manipulate the degree for corplot ####
 
