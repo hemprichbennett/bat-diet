@@ -143,9 +143,11 @@ write.csv(all_ecology, 'data/output_data/all_bats/sitewise_all_individual_info.c
 save.image('data/output_data/sitewise_all_individual_info.RDS')
 #####Local work ####
 load('data/output_data/sitewise_all_individual_info.RDS')
-all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
+#all_ecology$Site <- gsub('MALUA', 'SBE', all_ecology$Site)
 
+# Remove SBE (aka Malua) as we don't want to use it for the manuscript
 
+all_ecology <- all_ecology[-which(all_ecology$Site == 'MALUA'),]
 
 #Look at the occurence of taxa in each species
 
@@ -311,29 +313,36 @@ summary(fixed.dum)
 fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
 summary(fixed_hab)
 
+#Make a table of samples used, for thesis
+
+degree_df$SiteAndYear <- paste0(degree_df$Site, ', ', degree_df$Year)
+sample_table <- table(degree_df$Species, degree_df$SiteAndYear)
+
+write.csv(sample_table,'results/sample_table.csv')
+
 #Run a fixed effect using site AND habitat type, then AIC it
-both <- lm(degree ~ hab_type + Site + factor(Species) - 1, data = degree_df)
+both <- lm(degree ~ factor(hab_type) + Site + factor(Species) - 1, data = degree_df)
 
 step_mod <- MASS::stepAIC(both, direction = 'backward')
 
 step_mod
 summary(step_mod)
-
-anova(fixed.dum, fixed_hab)
-
-#Isolate and work with the coefficients from the best model
-f_h <- summary(fixed_hab)
-f_h <- f_h$coefficients
-rownames(f_h) %<>%
-  gsub('hab_type', 'Habitat: ', .)%<>%
-  gsub('factor\\(Species\\)', 'Species: ', .)
-
-f_h <- round(f_h, 3)
-
-f_h
-write.csv(f_h, 'results/degree_model_coefficients.csv')
-
-sp_ridge <- ggplot(degree_df[-which(degree_df$Site=='SBE'),], aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
+# 
+# anova(fixed.dum, fixed_hab)
+# 
+# #Isolate and work with the coefficients from the best model
+# f_h <- summary(fixed_hab)
+# f_h <- f_h$coefficients
+# rownames(f_h) %<>%
+#   gsub('hab_type', 'Habitat: ', .)%<>%
+#   gsub('factor\\(Species\\)', 'Species: ', .)
+# 
+# f_h <- round(f_h, 3)
+# 
+# f_h
+# write.csv(f_h, 'results/degree_model_coefficients.csv')
+# 
+sp_ridge <- ggplot(degree_df, aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
   geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
   theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
   scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
