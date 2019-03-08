@@ -343,7 +343,7 @@ summary(step_mod)
 # write.csv(f_h, 'results/degree_model_coefficients.csv')
 # 
 sp_ridge <- ggplot(degree_df, aes (y =fct_rev(Site), x =degree, fill=fct_rev(hab_type))) + 
-  geom_density_ridges(scale= 0.85)+ #The scale determines the space between the rows
+  geom_density_ridges(scale= 0.85, panel_scaling = F)+ #The scale determines the space between the rows
   theme_ridges()+ #This changes the theme to make it more aesthetically pleasing
   scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = 'legend', name = 'Habitat type')+
   scale_x_continuous(expand = c(0.01, 0)) + #Make the space between the labels and plot smaller
