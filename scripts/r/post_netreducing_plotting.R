@@ -104,11 +104,19 @@ for(i in 1: length(allfiles)){
   print(individuals_scatter)
   dev.off()
   
+  jpeg(paste('plots/netreducing/rarifying_', infilename, '_individuals.jpeg', sep = ''), width = 1800, height =2400, res = 300)
+  print(individuals_scatter)
+  dev.off()
+  
   tiff(paste('plots/netreducing/rarifying_', infilename, '_individuals.tiff', sep = ''), width = 1800, height =2400, res = 500)
   print(individuals_scatter)
   dev.off()
   
   tiff(paste('plots/netreducing/rarifying_', infilename, '_diversity.tiff', sep = ''), width = 1800, height =2400, res = 500)
+  print(diversity_scatter)
+  dev.off()
+  
+  jpeg(paste('plots/netreducing/rarifying_', infilename, '_diversity.jpeg', sep = ''), width = 1800, height =2400, res = 300)
   print(diversity_scatter)
   dev.off()
   

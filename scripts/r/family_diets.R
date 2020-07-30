@@ -16,6 +16,7 @@ if(interactive()==TRUE){
   library(reshape2)
   library(corrplot)
   library(DataExplorer)
+  library(dplyr)
 }else{
   library(here, lib.loc = '/data/home/btw863/r_packages/')
 }
@@ -199,14 +200,21 @@ prop_present$order[prop_present$Family %in% c('Tarsonemidae', 'Eupodidae', 'Bdel
 #prop_present$order <- gsub(' \\(', '\n(', prop_present$order) #This would put the common name on a newline, however I've commented it out for now to make the order itself bigger in the plots
 prop_present$order <-  gsub(' .+', '', prop_present$order)
 
-longtiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(y = fct_rev(Family), x = for_x)) + geom_tile(aes(fill=prop), colour = 'white')+
+write.csv(prop_present, 'results/family_proportions.csv')
+
+longtiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], 
+                    aes(y = fct_rev(Family), x = for_x)) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
   scale_fill_gradient2(low = "white", mid = "blue",
-                       high = "black", midpoint = 0.5, name ='Proportion of\nsamples containing', limits = c(0,1)) +
+                       high = "black", midpoint = 0.5, 
+                       name ='Proportion of\nsamples containing', limits = c(0,1)) +
   labs(x ="Bat species", y = 'Prey')+
   theme_linedraw()+
   theme(strip.background =element_rect(fill="black", size = 3))+
-  theme(panel.grid.major = element_blank(),axis.text.x = element_text(angle = 45, hjust = 1),
-        strip.text.y = element_text(colour = 'white', size = 8, angle = 180), strip.placement = "outside",
+  theme(panel.grid.major = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(colour = 'white', size = 8, angle = 180), 
+        strip.placement = "outside",
         panel.background = element_rect(fill = "darkgray",
                                         colour = "darkgray",
                                         size = 0.5, linetype = NULL))+
@@ -217,6 +225,94 @@ longtiles
 pdf('plots/familyplots/tile_long_family.pdf', height = 14)
 longtiles
 dev.off()
+
+# Now make a series of these family plots over multiple figures, it'll be
+# easier to read than squidging it all into a single one
+
+
+# Orders A-D --------------------------------------------------------------
+
+prop_1 <- prop_present %>%
+  filter(order %in% unique(prop_present$order)[grep('^[A-D].+', unique(prop_present$order))]) %>%
+  filter(prop != 0)
+
+long_1 <- ggplot(data = prop_1, 
+                 aes(y = fct_rev(Family), x = for_x)) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
+  scale_fill_gradient2(low = "white", mid = "blue",
+                       high = "black", midpoint = 0.5, 
+                       name ='Proportion of\nsamples containing', limits = c(0,1)) +
+  labs(x ="Bat species", y = 'Prey')+
+  theme_linedraw()+
+  theme(strip.background =element_rect(fill="black", size = 3))+
+  theme(panel.grid.major = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(colour = 'white', size = 8, angle = 180), 
+        strip.placement = "outside",
+        panel.background = element_rect(fill = "darkgray",
+                                        colour = "darkgray",
+                                        size = 0.5, linetype = NULL))+
+  facet_grid(order ~ ., scales = 'free', space="free", switch = "y")
+
+long_1
+ggsave('plots/familyplots/long_1.pdf', long_1, height = 14)
+
+
+# Orders E-L --------------------------------------------------------------
+
+prop_2 <- prop_present %>%
+  filter(order %in% unique(prop_present$order)[grep('^[E-L].+', unique(prop_present$order))]) %>%
+  filter(prop != 0)
+
+long_2 <- ggplot(data = prop_2, 
+                 aes(y = fct_rev(Family), x = for_x)) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
+  scale_fill_gradient2(low = "white", mid = "blue",
+                       high = "black", midpoint = 0.5, 
+                       name ='Proportion of\nsamples containing', limits = c(0,1)) +
+  labs(x ="Bat species", y = 'Prey')+
+  theme_linedraw()+
+  theme(strip.background =element_rect(fill="black", size = 3))+
+  theme(panel.grid.major = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(colour = 'white', size = 8, angle = 180), 
+        strip.placement = "outside",
+        panel.background = element_rect(fill = "darkgray",
+                                        colour = "darkgray",
+                                        size = 0.5, linetype = NULL))+
+  facet_grid(order ~ ., scales = 'free', space="free", switch = "y")
+
+long_2
+ggsave('plots/familyplots/long_2.pdf', long_2, height =14)
+
+
+# Orders M-Z --------------------------------------------------------------
+
+prop_3 <- prop_present %>%
+  filter(order %in% unique(prop_present$order)[grep('^[M-Z].+', unique(prop_present$order))]) %>%
+  filter(prop != 0)
+
+long_3 <- ggplot(data = prop_3, 
+                 aes(y = fct_rev(Family), x = for_x)) + 
+  geom_tile(aes(fill=prop), colour = 'white')+
+  scale_fill_gradient2(low = "white", mid = "blue",
+                       high = "black", midpoint = 0.5, 
+                       name ='Proportion of\nsamples containing', limits = c(0,1)) +
+  labs(x ="Bat species", y = 'Prey')+
+  theme_linedraw()+
+  theme(strip.background =element_rect(fill="black", size = 3))+
+  theme(panel.grid.major = element_blank(), 
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(colour = 'white', size = 8, angle = 180), 
+        strip.placement = "outside",
+        panel.background = element_rect(fill = "darkgray",
+                                        colour = "darkgray",
+                                        size = 0.5, linetype = NULL))+
+  facet_grid(order ~ ., scales = 'free', space="free", switch = "y")
+
+long_3
+ggsave('plots/familyplots/long_3.pdf', long_3, height = 14)
+
 
 
 widetiles <- ggplot(data = prop_present[which(prop_present$prop!=0),], aes(x = Family, y = fct_rev(for_x))) + 

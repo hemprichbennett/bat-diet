@@ -62,7 +62,7 @@ prey_data$MOTU <- as.character(prey_data$MOTU)
 taxa_mat <- matrix(nrow = 0, ncol = ncol(all_interactions))
 colnames(taxa_mat) <- colnames(all_interactions)
 z <- 1
-for (i in 1:nrow(all_interactions)) { #### THIS NEEDS SOME SERIOUS EDITING BEFORE IT'LL WORK
+for (i in 1:nrow(all_interactions)) {
   rowname <- rownames(all_interactions)[i]
   if (!rowname %in% prey_data$MOTU) {
     next()
@@ -189,17 +189,22 @@ prop_present$Species <- gsub("Rhtr", "Rhinolophus\ntrifoliatus", prop_present$Sp
 
 
 tiles <- ggplot(data = prop_present[which(prop_present$nbats > 5), ], aes(y = fct_rev(Order), x = Site)) + geom_tile(aes(fill = prop), colour = "white") +
-  scale_fill_gradient(
-    low = "white",
-    high = "black", name = "Proportion\nof bats\nconsuming",
-    breaks = c(0.25, 0.5, 0.75, 1)
+  scale_fill_gradient2(
+    low = "white", mid = 'blue',
+    high = "black", name = "Proportion of bats consuming",
+    breaks = c(0, 0.25, 0.5, 0.75, 1), midpoint = 0.5
   ) +
-  labs(x = "Site", y = "Prey taxa") +
-  theme(panel.background = element_blank(), axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Site", y = "Prey order") +
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "darkgray",
+                                        colour = "darkgray")) +
   theme(strip.text.x = element_text(size = 12)) +
   facet_wrap(~Species) +
   theme(
-    legend.position = "bottom", legend.justification = "right", strip.background = element_rect(fill = "white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),
+    legend.position = "bottom", legend.justification = "left", strip.background = element_rect(fill = "white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"),
     strip.text = element_text(face = "italic")
   ) # strip stuff sorts the facet labels, spacing adjusts the space between facets
 
@@ -209,21 +214,20 @@ pdf("plots/sitewise_proportion_of_bats_containing.pdf", height = 12)
 tiles
 dev.off()
 
-jpeg("plots/sitewise_proportion_of_bats_containing.jpg", units = "in", width = 9, height = 9, res = 300)
+jpeg("plots/sitewise_proportion_of_bats_containing.jpg", units = "in", width = 9, height = 12, res = 300)
 tiles
 dev.off()
 
 
 
-degree_df <- data.frame(all_ecology$degree, all_ecology$Species, all_ecology$Site, all_ecology$Year)
 colnames(degree_df) <- gsub("all_ecology\\.", "", colnames(degree_df))
 degree_df$genus <- rep(NA, nrow(degree_df))
 degree_df$genus[grepl("Hi", degree_df$Species)] <- "Hipposideros"
 degree_df$genus[grepl("Rh", degree_df$Species)] <- "Rhinolophus"
 degree_df$genus[grepl("Ke", degree_df$Species)] <- "Kerivoula"
 degree_df$hab_type <- rep(NA, nrow(degree_df))
-degree_df$hab_type[grepl("Danum", degree_df$Site)] <- "Primary"
-degree_df$hab_type[grepl("Maliau", degree_df$Site)] <- "Primary"
+degree_df$hab_type[grepl("Danum", degree_df$Site)] <- "Old growth"
+degree_df$hab_type[grepl("Maliau", degree_df$Site)] <- "Old growth"
 degree_df$hab_type[grepl("SAFE", degree_df$Site)] <- "Logged"
 degree_df$hab_type[grepl("SBE", degree_df$Site)] <- "Logged, replanted"
 degree_df$degree <- as.integer(degree_df$degree)
@@ -255,23 +259,38 @@ sample_table <- table(degree_df$Species, degree_df$SiteAndYear)
 write.csv(sample_table, "results/sample_table.csv")
 
 # Run two fixed effects models, then compare them
-fixed_dum <- lm(degree ~ Site + factor(Species) - 1, data = degree_df)
-summary(fixed_dum)
+fixed_site <- lm(degree ~ factor(Site) + factor(Species) - 1, data = degree_df)
 
 
-fixed_hab <- lm(degree ~ hab_type + factor(Species) - 1, data = degree_df)
-summary(fixed_hab)
+
+fixed_hab <- lm(degree ~ factor(hab_type) + factor(Species) - 1, data = degree_df)
 
 
-anova(fixed_dum, fixed_hab)
+
+anova(fixed_site, fixed_hab)
 
 # Run a fixed effect using site AND habitat type, then AIC it
 both <- lm(degree ~ factor(hab_type) + factor(Site) + factor(Species) - 1, data = degree_df)
 
-step_mod <- MASS::stepAIC(both, direction = "backward")
+step_mod <- MASS::stepAIC(both, 
+  direction = "backward")
 
-step_mod$anova
-summary(step_mod)
+# step_mod shows us that the best-fitting model drops no terms. However we want to drop either
+# hab_type or Site. Dropping Site reduces AIC the least, therefore we drop Site
+# as dropping hab_type reduces the AIC of our model most.
+
+summary(fixed_hab)
+
+
+library(broom); library(dplyr)
+model_df <- left_join(tidy(fixed_hab, quick = TRUE),
+                tidy(fixed_hab, quick = FALSE),
+                by = c("term", "estimate")) #Save the model output as a df
+# code from https://stackoverflow.com/questions/47891753/exporting-lm-summary-output-to-dataframe-including-na
+
+model_df$term <- gsub('.+)', '', model_df$term)
+
+write.csv(model_df, 'results/degree_model_coefficients.csv')
 
 sp_ridge <- ggplot(degree_df, aes(y = fct_rev(Site), x = degree, fill = fct_rev(hab_type))) +
   geom_density_ridges(scale = 0.85, panel_scaling = F) + # The scale determines the space between the rows
@@ -279,7 +298,7 @@ sp_ridge <- ggplot(degree_df, aes(y = fct_rev(Site), x = degree, fill = fct_rev(
   scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = "legend", name = "Habitat type") +
   scale_x_continuous(expand = c(0.01, 0)) + # Make the space between the labels and plot smaller
   scale_y_discrete(expand = c(0.01, 0)) + # Make it so the top series actually fits in the plot
-  ylab(NULL) + xlab("Number of prey OTUs") +
+  ylab(NULL) + xlab("Number of prey MOTUs") +
   facet_wrap(~Species, ncol = 5) + # free_x is required so that the x-axes aren't all constrained to showing the same thing
   theme(
     strip.background = element_rect(fill = "white"), strip.placement = "outside", panel.spacing = unit(0.8, "lines"), # strip stuff sorts the facet labels, spacing adjusts the space between facets
@@ -292,7 +311,8 @@ sp_ridge <- ggplot(degree_df, aes(y = fct_rev(Site), x = degree, fill = fct_rev(
     panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
     strip.text = element_text(face = "italic"),
     legend.position = "bottom"
-  ) # This makes the facet titles italic)
+  )+ # This makes the facet titles italic
+  theme(axis.text.y = element_text(vjust=-2.5)) # Make the y axis labels a little higher
 
 sp_ridge
 
@@ -300,7 +320,7 @@ pdf("plots/degree_ridges.pdf", width = 12)
 sp_ridge
 dev.off()
 
-jpeg("plots/degree_ridges.jpg", units = "in", width = 9, height = 9, res = 300)
+jpeg("plots/degree_ridges.jpg", units = "in", width = 12, height = 7, res = 500)
 sp_ridge
 dev.off()
 
