@@ -12,6 +12,7 @@ if (interactive() == TRUE) {
   library(ggridges)
   library(reshape2)
   library(forcats)
+  library(dplyr)
 } else {
   library(here, lib.loc = "/data/home/btw863/r_packages/")
 }
@@ -219,6 +220,8 @@ tiles
 dev.off()
 
 
+degree_df <- all_ecology %>%
+  select(Site, degree, Species)
 
 colnames(degree_df) <- gsub("all_ecology\\.", "", colnames(degree_df))
 degree_df$genus <- rep(NA, nrow(degree_df))
@@ -293,7 +296,9 @@ model_df$term <- gsub('.+)', '', model_df$term)
 write.csv(model_df, 'results/degree_model_coefficients.csv')
 
 sp_ridge <- ggplot(degree_df, aes(y = fct_rev(Site), x = degree, fill = fct_rev(hab_type))) +
-  geom_density_ridges(scale = 0.85, panel_scaling = F) + # The scale determines the space between the rows
+  geom_density_ridges(scale = 0.85, panel_scaling = F,
+                      quantile_lines=TRUE,
+                      quantile_fun=function(x,...)mean(x)) + # The scale determines the space between the rows
   theme_ridges() + # This changes the theme to make it more aesthetically pleasing
   scale_fill_cyclical(values = c("#d0ca9f", "#85d7da"), guide = "legend", name = "Habitat type") +
   scale_x_continuous(expand = c(0.01, 0)) + # Make the space between the labels and plot smaller
@@ -323,6 +328,10 @@ dev.off()
 jpeg("plots/degree_ridges.jpg", units = "in", width = 12, height = 7, res = 500)
 sp_ridge
 dev.off()
+
+mean_degree <- degree_df %>% 
+  group_by(Species, Site) %>% 
+  summarise(m = mean(degree))
 
 tall <- ggplot(degree_df, aes(y = fct_rev(Site), x = degree, fill = fct_rev(hab_type))) +
   geom_density_ridges(scale = 0.85) + # The scale determines the space between the rows

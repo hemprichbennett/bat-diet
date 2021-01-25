@@ -11,6 +11,7 @@ library(ggplot2)
 library(magrittr)
 library(reshape2)
 library(forcats)
+library(tidyverse)
 
 source(here('scripts', 'r', 'r_network_gen.r'))
 
@@ -51,6 +52,16 @@ sp_df <- read.csv(here('results', 'species_level_data.csv'), row.names = 1)
 sp_df$site %<>%
   gsub('DANUM', 'Danum', .)%<>%
   gsub('MALIAU', 'Maliau', .)
+
+
+degree_summaries <- sp_df %>%
+  group_by(site) %>%
+  summarise(mean_cc = mean(closeness),
+            mean_bc = mean(betweenness),
+            sd_cc = sd(closeness),
+            sd_bc = sd(betweenness))
+
+degree_summaries
 
 #sp_df
 ggplot(sp_df, aes(x=species, y = betweenness))+ geom_point()+ facet_wrap(~ site)+
