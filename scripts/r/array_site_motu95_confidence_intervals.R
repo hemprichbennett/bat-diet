@@ -7,13 +7,11 @@
 ##################################################
 
 
-if(interactive()==TRUE){
-  library(here)
-}else{
-  library(reshape2, lib.loc = '/data/home/btw863/r_packages/')
-  library(here, lib.loc = '/data/home/btw863/r_packages/')
-  library(LOTUS, lib.loc = '/data/home/btw863/r_packages/')
-}
+library(here)
+library(reshape2)
+library(LOTUS)
+library(foreach)
+library(doParallel)
 
 
 
@@ -34,38 +32,90 @@ filenames <- paste(inpath, filenames, sep = '')
 rawnets <- lapply(filenames, read.csv, header = F, stringsAsFactors = F, row.names=1)
 names(rawnets) <- gsub('.*\\/', '', filenames)
 names(rawnets) <- gsub('_.+', '', names(rawnets))
+
+for(i in 1:length(rawnets)){
+  rawnets[[i]][2:nrow(rawnets[[i]]),] <- ifelse(rawnets[[i]][2:nrow(rawnets[[i]]), ] == 0, 0, 1)
+}
+
 netlists <- lapply(rawnets, function(x) r_network_gen(input= x,  collapse_species = T, filter_species = T))
 
 names(netlists) <- names(rawnets)
 
-args = commandArgs(trailingOnly=TRUE)
-
-cat(args, '\n')
-
-args <- as.numeric(args)
+# args = commandArgs(trailingOnly=TRUE)
+# 
+# cat(args, '\n')
+# 
+# args <- as.numeric(args)
 
 
 ind <- c('functional complementarity',
-         'web asymmetry',
-         'Alatalo interaction evenness',
-         'togetherness',
-         'Fisher alpha', 'mean number of shared partners',
-         'niche overlap',
-         'nestedness',
-         'discrepancy',
-         'ISA', 'weighted nestedness', 'NODF', 'weighted NODF', 'modularity')
-
-chosen_ind <- ind[args]
-
-print(chosen_ind)
-
-real_and_errors <- randomized_ranges(netlists, indices = chosen_ind, network_level = 'higher', out_format = 'data.frame', quantiles_to_return = c(0.025, 0.975), actual_vals = T, n_perm = 100)
-
-outname <- paste('data/output_data/randomized_ranges/', chosen_ind, '.csv', sep = '')
-write.csv(real_and_errors, outname)
-
-cat(outname, 'written')
+         'weighted NODF', 'modularity')
 
 
-#save.image(paste('data/output_data/all_bats/', chosen_ind, '_real_and_error_calcs.RDS', sep = ''))
-#plot_str(trial, type = "r")
+# I'm doing this locally as the cluster is down, so use some trickery to run
+# parallel loops
+
+
+# Setup parallel loops ----------------------------------------------------
+# code modified from https://www.blasbenito.com/post/02_parallelizing_loops_with_r/
+
+parallel::detectCores()
+n.cores <- parallel::detectCores() - 1
+
+my.cluster <- parallel::makeCluster(
+  n.cores, 
+  type = "PSOCK"
+)
+
+#check cluster definition (optional)
+print(my.cluster)
+
+#register it to be used by %dopar%
+doParallel::registerDoParallel(cl = my.cluster)
+
+#check if it is registered (optional)
+foreach::getDoParRegistered()
+
+#how many workers are available? (optional)
+foreach::getDoParWorkers()
+
+
+start_time <- Sys.time()
+print(start_time)
+
+foreach(parallel_i = 1:1000) %dopar%{
+  for(i in 1:length(ind)){
+    chosen_ind <- ind[i]
+    print(chosen_ind)
+    
+    real_and_errors <- LOTUS::randomized_ranges(netlists, indices = chosen_ind, 
+                                         network_level = 'higher', 
+                                         out_format = 'list', 
+                                         summarise = F, 
+                                         actual_vals = F, n_perm = 1,
+                                         modularity_nperm = 1000
+    )
+    
+    # reformat the object, as its output as a list which doesn't like
+    # being saved as a csv
+    temp <- as.data.frame(real_and_errors)
+    z <- data.frame(meta = colnames(temp), vals = as.numeric(temp[1,]))
+    
+    outname <- paste('data/output_data/for_z_scores/', chosen_ind, 
+                     '_', parallel_i, '_', i,
+                     '.csv', sep = '')
+    write.csv(z, outname)
+    
+    cat(outname, 'written')
+}
+
+
+  
+ 
+}
+
+end_time <- Sys.time()
+print(end_time)
+
+print(end_time - start_time)
+parallel::stopCluster(cl = my.cluster)
