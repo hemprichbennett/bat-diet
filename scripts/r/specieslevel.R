@@ -76,13 +76,18 @@ ggplot(all_melted, aes(x=site, y = value, colour = species))+ geom_point()+ face
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-#Make some just for centrality
-centrality_melted <- all_melted[which(all_melted$variable %in% c('betweenness', 'closeness', 'degree')),]
+
+
+#Make some for centrality, degree and species strength
+centrality_melted <- all_melted[which(all_melted$variable %in% c('betweenness', 
+                                                                 'closeness', 'degree',
+                                                                 'species strength')),]
 
 centrality_melted$variable %<>%
   gsub('betweenness', 'Betweenness centrality', .)%<>%
   gsub('closeness', 'Closeness centrality', .)%<>%
-  gsub('degree', 'Degree', .)
+  gsub('degree', 'Degree', .) %<>%
+  gsub('species strength', 'Species strength', .)
 
 centrality_plot_list <- list()
 for(i in 1:length(unique(centrality_melted$variable))){
@@ -99,7 +104,26 @@ for(i in 1:length(unique(centrality_melted$variable))){
     pdf(paste('plots/species/', met, '.pdf', sep = ''), height = 9)
     print(centrality_plot_list[[met]])
     dev.off()
-  }else{
+  }
+  if(met == "Species strength"){
+    centrality_plot_list[[met]] <- ggplot(centrality_melted[which(centrality_melted$variable==met),], aes(x=site, y = fct_rev(species)))+ 
+      geom_tile(aes(fill=value))+
+      scale_fill_gradient2(low = 'white', mid = 'lightblue', high = 'black',
+                          name = gsub(' ', '\n', met)) + 
+      theme_bw() + 
+      theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(), 
+            axis.text.x = element_text(angle = 90, hjust = 1), 
+            axis.text.y = element_text(face = "italic"), legend.position="bottom",
+            axis.line = element_line(colour = "black"),
+            panel.background = element_rect(fill = "darkgray",
+                                            colour = "darkgray"))+
+      labs(x= 'Site', y = 'Species')
+    pdf(paste('plots/species/', met, '.pdf', sep = ''), height = 9)
+    print(centrality_plot_list[[met]])
+    dev.off()
+  }
+  else{
     centrality_plot_list[[met]] <- ggplot(centrality_melted[which(centrality_melted$variable==met),], aes(x=site, y = fct_rev(species)))+ 
       geom_tile(aes(fill=value))+
       scale_fill_gradient(low = "white",
