@@ -20,3 +20,11 @@ plots/
 *.png
 .Rhistory[Conflict 1]
 *.DS_Store
+.DS_Store
+manuscript
+temp_degree_investigation.html
+Degradation_manuscript.Rmd
+work/*
+*.out
+*manuscript_cache*
+*.log
