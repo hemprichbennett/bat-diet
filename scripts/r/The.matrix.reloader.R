@@ -90,6 +90,8 @@ the.matrix.reloader <- function(master.data, ID.column.1, ID.column.2=0, species
       temp_matrix_2[1,myindex4] <- sp_name
       }
   }
+  # make the entries binary rather than weighted
+  temp_matrix_2[2:nrow(temp_matrix_2),] <- ifelse(temp_matrix_2[2:nrow(temp_matrix_2),] == 0, 0, 1)
   #return(temp_matrix_2)
   myindex6 <- 1
   if(collapse_top_species==FALSE){
